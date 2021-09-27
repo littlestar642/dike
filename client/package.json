@@ -4,7 +4,7 @@
   "description": "Template project for React web",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc && node main.js",
+    "start": "nodemon index.ts",
     "build": "tsc && webpack --mode development",
     "build-prod": "tsc && webpack --mode production",
     "cleanup": "del /s /q src\\*.js src\\*.js.map && rmdir /s /q dist"
@@ -31,7 +31,9 @@
     "babel-loader": "^8.2.2",
     "babel-watch": "^7.4.1",
     "css-loader": "^1.0.0",
+    "nodemon": "^2.0.13",
     "style-loader": "^0.23.0",
+    "ts-node": "^10.2.1",
     "typescript": "^4.3.2",
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.1",
