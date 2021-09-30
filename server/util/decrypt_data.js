@@ -1,8 +1,6 @@
-const uuid = require("./uuid");
 var axios = require("axios");
 const config = require("./../config");
-var parseString = require("xml2js").parseString;
-const localStorage = require("localStorage");
+const firebaseUtil = require("./firestore")
 
 const decrypt_data = (fi, privateKey, keyMaterial) => {
   const fi_data = fi[0];
@@ -18,16 +16,16 @@ const decrypt_data = (fi, privateKey, keyMaterial) => {
     url: config.rahasya_url + "/ecc/v1/decrypt",
     data: body,
   };
-
+  console.log("here 4")
   axios(requestConfig)
     .then((res) => {
       let base64Data = res.data["base64Data"];
-      let decoded_data = Buffer.from(base64Data, "base64").toString();
-      var xml = decoded_data;
-      parseString(xml, function (err, result) {
-        console.log(typeof result);
-        localStorage.setItem("jsonData", JSON.stringify(result));
-      });
+      let decoded_data = Buffer.from(base64Data, "base64").toString("ascii");
+      firebaseUtil.GetInstance().update("fidata/doc",JSON.parse(decoded_data)).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log("error",err)
+      })
     })
     .catch((err) => console.log(err));
 };

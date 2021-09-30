@@ -4,11 +4,12 @@ const app = express();
 const config = require("./config");
 var axios = require("axios");
 const localStorage = require("localStorage");
+const firebaseUtil = require("./util/firestore")
 
 var jwkToPem = require("jwk-to-pem");
 
 // UTILS
-const uuid = require("./util/uuid");
+const uuid = require("uuid");
 const signature = require("./util/request_signing");
 const requestData = require("./util/request_data");
 const createData = require("./util/consent_detail");
@@ -55,7 +56,7 @@ app.get("/consent/:mobileNumber", (req, res) => {
         config.app_url +
         "/" +
         response.data.ConsentHandle +
-        "?redirect_url=https://demo-pfm.herokuapp.com/redirect";
+        `?redirect_url=${config.redirect_url}/redirectS`;
       res.send(url);
     })
     .catch(function (error) {
@@ -64,6 +65,9 @@ app.get("/consent/:mobileNumber", (req, res) => {
     });
 });
 
+app.get("/redirectS",(req,res)=>{
+    res.send("redirected")
+})
 ////// CONSENT NOTIFICATION
 
 app.post("/Consent/Notification", (req, res) => {
@@ -89,7 +93,7 @@ app.post("/Consent/Notification", (req, res) => {
     res.send({
       ver: "1.0",
       timestamp: dateNow.toISOString(),
-      txnid: uuid.create_UUID(),
+      txnid: uuid.v4(),
       response: "OK",
     });
   } else {
@@ -116,6 +120,7 @@ const fetchSignedConsent = (consent_id) => {
       "x-jws-signature": detachedJWS,
     },
   };
+  console.log("here 1")
 
   axios(requestConfig)
     .then(function (response) {
@@ -151,6 +156,8 @@ const fi_data_request = async (signedConsent, consent_id) => {
     data: request_body,
   };
 
+  console.log("here 2")
+
   axios(requestConfig)
     .then(function (response) {
       // Ideally, after this step we save the session ID in your DB and wait for FI notification and then proceed.
@@ -181,7 +188,7 @@ app.post("/FI/Notification", (req, res) => {
     res.send({
       ver: "1.0",
       timestamp: dateNow.toISOString(),
-      txnid: uuid.create_UUID(),
+      txnid: uuid.v4(),
       response: "OK",
     });
   } else {
@@ -208,6 +215,7 @@ const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
       "x-jws-signature": detachedJWS,
     },
   };
+  console.log("here 3")
   axios(requestConfig)
     .then(function (response) {
       decrypt_data(response.data.FI, encryption_privateKey, keyMaterial);
@@ -220,8 +228,9 @@ const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
 
 ///// GET DATA
 
-app.get("/get-data", (req, res) => {
-  res.send(JSON.parse(localStorage.getItem("jsonData")));
+app.get("/get-data", async (req, res) => {
+let val = await firebaseUtil.GetInstance().get("fidata/doc")
+  res.send(val);
 });
 // start the server listening for requests
 app.listen(config.port || 3000, () => console.log("Server is running..."));
