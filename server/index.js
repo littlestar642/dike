@@ -2,13 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const config = require("./config");
+const cfg = require("./util/config")
 var axios = require("axios");
 const localStorage = require("localStorage");
+const firebaseUtil = require("./util/firestore")
 
 var jwkToPem = require("jwk-to-pem");
 
 // UTILS
-const uuid = require("./util/uuid");
+const uuid = require("uuid");
 const signature = require("./util/request_signing");
 const requestData = require("./util/request_data");
 const createData = require("./util/consent_detail");
@@ -34,9 +36,7 @@ app.get("/", function (req, res) {
 app.get("/consent/:mobileNumber", (req, res) => {
   localStorage.setItem("consent", "Pending");
   let body = createData(req.params.mobileNumber);
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(privateKey, body);
   var requestConfig = {
     method: "post",
@@ -55,7 +55,7 @@ app.get("/consent/:mobileNumber", (req, res) => {
         config.app_url +
         "/" +
         response.data.ConsentHandle +
-        "?redirect_url=https://demo-pfm.herokuapp.com/redirect";
+        `?redirect_url=${config.redirect_url}/redirectS`;
       res.send(url);
     })
     .catch(function (error) {
@@ -64,6 +64,9 @@ app.get("/consent/:mobileNumber", (req, res) => {
     });
 });
 
+app.get("/redirectS",(req,res)=>{
+    res.send("redirected")
+})
 ////// CONSENT NOTIFICATION
 
 app.post("/Consent/Notification", (req, res) => {
@@ -71,7 +74,7 @@ app.post("/Consent/Notification", (req, res) => {
   console.log(body);
 
   let headers = req.headers;
-  let obj = JSON.parse(fs.readFileSync("./keys/setu_public_key.json", "utf8"));
+  let obj = JSON.parse(cfg.getSetuPublicKey());
   let pem = jwkToPem(obj);
 
   if (signature.validateDetachedJWS(headers["x-jws-signature"], body, pem)) {
@@ -89,7 +92,7 @@ app.post("/Consent/Notification", (req, res) => {
     res.send({
       ver: "1.0",
       timestamp: dateNow.toISOString(),
-      txnid: uuid.create_UUID(),
+      txnid: uuid.v4(),
       response: "OK",
     });
   } else {
@@ -100,9 +103,7 @@ app.post("/Consent/Notification", (req, res) => {
 ////// FETCH SIGNED CONSENT
 
 const fetchSignedConsent = (consent_id) => {
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(
     privateKey,
     "/Consent/" + consent_id
@@ -136,9 +137,7 @@ const fi_data_request = async (signedConsent, consent_id) => {
     consent_id,
     keys["KeyMaterial"]
   );
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(privateKey, request_body);
   var requestConfig = {
     method: "post",
@@ -181,7 +180,7 @@ app.post("/FI/Notification", (req, res) => {
     res.send({
       ver: "1.0",
       timestamp: dateNow.toISOString(),
-      txnid: uuid.create_UUID(),
+      txnid: uuid.v4(),
       response: "OK",
     });
   } else {
@@ -192,9 +191,7 @@ app.post("/FI/Notification", (req, res) => {
 ////// FETCH DATA REQUEST
 
 const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(
     privateKey,
     "/FI/fetch/" + session_id
@@ -208,6 +205,7 @@ const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
       "x-jws-signature": detachedJWS,
     },
   };
+  
   axios(requestConfig)
     .then(function (response) {
       decrypt_data(response.data.FI, encryption_privateKey, keyMaterial);
@@ -220,8 +218,9 @@ const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
 
 ///// GET DATA
 
-app.get("/get-data", (req, res) => {
-  res.send(JSON.parse(localStorage.getItem("jsonData")));
+app.get("/get-data", async (req, res) => {
+let val = await firebaseUtil.GetInstance().get("fidata/doc")
+  res.send(val);
 });
 // start the server listening for requests
 app.listen(config.port || 3000, () => console.log("Server is running..."));
