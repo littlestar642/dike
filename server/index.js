@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const config = require("./config");
+const cfg = require("./util/config")
 var axios = require("axios");
 const localStorage = require("localStorage");
 const firebaseUtil = require("./util/firestore")
@@ -35,9 +36,7 @@ app.get("/", function (req, res) {
 app.get("/consent/:mobileNumber", (req, res) => {
   localStorage.setItem("consent", "Pending");
   let body = createData(req.params.mobileNumber);
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(privateKey, body);
   var requestConfig = {
     method: "post",
@@ -75,7 +74,7 @@ app.post("/Consent/Notification", (req, res) => {
   console.log(body);
 
   let headers = req.headers;
-  let obj = JSON.parse(fs.readFileSync("./keys/setu_public_key.json", "utf8"));
+  let obj = JSON.parse(cfg.getSetuPublicKey());
   let pem = jwkToPem(obj);
 
   if (signature.validateDetachedJWS(headers["x-jws-signature"], body, pem)) {
@@ -104,9 +103,7 @@ app.post("/Consent/Notification", (req, res) => {
 ////// FETCH SIGNED CONSENT
 
 const fetchSignedConsent = (consent_id) => {
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(
     privateKey,
     "/Consent/" + consent_id
@@ -120,7 +117,6 @@ const fetchSignedConsent = (consent_id) => {
       "x-jws-signature": detachedJWS,
     },
   };
-  console.log("here 1")
 
   axios(requestConfig)
     .then(function (response) {
@@ -141,9 +137,7 @@ const fi_data_request = async (signedConsent, consent_id) => {
     consent_id,
     keys["KeyMaterial"]
   );
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(privateKey, request_body);
   var requestConfig = {
     method: "post",
@@ -155,8 +149,6 @@ const fi_data_request = async (signedConsent, consent_id) => {
     },
     data: request_body,
   };
-
-  console.log("here 2")
 
   axios(requestConfig)
     .then(function (response) {
@@ -199,9 +191,7 @@ app.post("/FI/Notification", (req, res) => {
 ////// FETCH DATA REQUEST
 
 const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
-  const privateKey = fs.readFileSync("./keys/private_key.pem", {
-    encoding: "utf8",
-  });
+  const privateKey = cfg.getAAPrivateKey()
   let detachedJWS = signature.makeDetachedJWS(
     privateKey,
     "/FI/fetch/" + session_id
@@ -215,7 +205,7 @@ const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial) => {
       "x-jws-signature": detachedJWS,
     },
   };
-  console.log("here 3")
+  
   axios(requestConfig)
     .then(function (response) {
       decrypt_data(response.data.FI, encryption_privateKey, keyMaterial);

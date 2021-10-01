@@ -1,16 +1,13 @@
 var admin = require("firebase-admin");
 const fs = require("fs");
+const cfg = require("./config")
 
 class FirestoreUtils {
     static instance;
     firestore;
-     
-
 
     constructor () {
-        let adminConfig64 = process.env.GOOGLE_ADMIN;
-        let adminConfig = JSON.parse(Buffer.from(adminConfig64, 'base64').toString('ascii'));
-      
+        let adminConfig = cfg.getFirebaseAdminConfig()
         admin.initializeApp({
             credential: admin.credential.cert(adminConfig)
         });
