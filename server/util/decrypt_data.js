@@ -21,10 +21,10 @@ const decrypt_data = (fi, privateKey, keyMaterial) => {
     .then((res) => {
       let base64Data = res.data["base64Data"];
       let decoded_data = Buffer.from(base64Data, "base64").toString("ascii");
-      firebaseUtil.GetInstance().update("fidata/doc",JSON.parse(decoded_data)).then(res=>{
+      firebaseUtil.GetInstance().update("fidata/doc", JSON.parse(decoded_data)).then(res => {
         console.log(res)
-      }).catch(err=>{
-        console.log("error",err)
+      }).catch(err => {
+        console.log("error", err)
       })
     })
     .catch((err) => console.log(err));

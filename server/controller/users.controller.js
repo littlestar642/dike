@@ -3,6 +3,7 @@ const cfg = require("../util/config")
 const signature = require("../util/request_signing");
 const axios = require("axios");
 const config = require("../config");
+const FirestoreUtils = require("../util/firestore");
 
 const Consent = (req, res) => {
     let body = createData(req.params.mobileNumber);
@@ -34,6 +35,12 @@ const Consent = (req, res) => {
         });
 }
 
+const GetData = async (req, res) => {
+    let val = await firebaseUtil.GetInstance().get("fidata/doc")
+    res.send(val);
+}
+
 module.exports = {
-    Consent
+    Consent,
+    GetData
 }

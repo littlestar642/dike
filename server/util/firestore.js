@@ -1,12 +1,17 @@
 var admin = require("firebase-admin");
 const fs = require("fs");
+const {
+    use
+} = require("../routes/users.routes");
 const cfg = require("./config")
+const response = require("./response")
+const User = require("../models/user")
 
 class FirestoreUtils {
     static instance;
     firestore;
 
-    constructor () {
+    constructor() {
         let adminConfig = cfg.getFirebaseAdminConfig()
         admin.initializeApp({
             credential: admin.credential.cert(adminConfig)
@@ -14,23 +19,62 @@ class FirestoreUtils {
         this.firestore = admin.firestore();
     }
 
-    static GetInstance () {
+    static GetInstance() {
         if (FirestoreUtils.instance === null || FirestoreUtils.instance === undefined) {
             FirestoreUtils.instance = new FirestoreUtils();
         }
         return FirestoreUtils.instance;
     }
 
-    isDoc (path) {
+    // saveDocument(collectionName, obj) {
+    //     this.firestore.collection(collectionName).add(obj).then((ref)=>{
+    //         console.log("Document written with ID: ", ref.id);
+    //     }).catch(e=>{
+    //         console.log("error in saving doc", e)
+    //     })
+    // }
+
+    async createUser(ID, username, phoneNumber) {
+        let user = new User(ID, username, phoneNumber, -1, -1, -1, -1, -1, -1, -1)
+        console.log(user)
+        try {
+            let userRef = await this.firestore.collection("users").doc(ID).create(user)
+            return response.Success(userRef)
+        } catch (e) {
+            console.log("error in creating user", e)
+            return response.Failure(e)
+        }
+    }
+
+    async checkJWTToken(token) {
+        try {
+            val = await admin.auth().verifyIdToken(token)
+            return response.Success(val)
+        } catch (e) {
+            return response.Failure(e)
+        }
+    }
+
+    async getUserDetails(userID) {
+        try {
+            let val = await admin.auth().getUser(userID)
+            return response.Success(val)
+        } catch (e) {
+            console.log("error in getting user details", e)
+            return response.Failure(e)
+        }
+    }
+
+    isDoc(path) {
         return path.split('/').length % 2 === 0;
     }
 
-    async get (path) {
+    async get(path) {
         try {
             if (this.isDoc(path)) {
                 let doc = this.firestore.doc(path);
                 let data = await doc.get();
-                return data?.data() ?? null;
+                return data ?.data() ?? null;
             }
         } catch (ex) {
             console.error(`Error reading doc: ${path}`, ex.message);
@@ -38,11 +82,13 @@ class FirestoreUtils {
         return null;
     }
 
-    async set (path, data) {
+    async set(path, data) {
         try {
             if (this.isDoc(path)) {
                 let doc = this.firestore.doc(path);
-                await doc.set(data, {merge: true});
+                await doc.set(data, {
+                    merge: true
+                });
                 return true;
             }
         } catch (ex) {
@@ -51,7 +97,7 @@ class FirestoreUtils {
         return false;
     }
 
-    async update (path, data){
+    async update(path, data) {
         try {
             if (this.isDoc(path)) {
                 let doc = this.firestore.doc(path);
@@ -64,7 +110,7 @@ class FirestoreUtils {
         return false;
     }
 
-    async del (path) {
+    async del(path) {
         try {
             if (this.isDoc(path)) {
                 let doc = this.firestore.doc(path);
@@ -78,4 +124,4 @@ class FirestoreUtils {
     }
 }
 
-module.exports= FirestoreUtils;
+module.exports = FirestoreUtils;
