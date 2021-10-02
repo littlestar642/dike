@@ -18,9 +18,9 @@ const generateKeyMaterial = async () => {
 const requestDataBody = (signedConsent, consent_id, keys) => {
   const dateNow = new Date();
   const consentStart = new Date();
-  consentStart.setDate(dateNow.getDate()-6*30)
+  consentStart.setDate(dateNow.getDate() - 6 * 30)
   const consentEnd = new Date();
-  consentEnd.setDate(dateNow.getDate()-3*30)
+  consentEnd.setDate(dateNow.getDate() - 3 * 30)
   let data = JSON.stringify({
     ver: "1.0",
     timestamp: dateNow.toISOString(),

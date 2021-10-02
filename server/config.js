@@ -10,5 +10,5 @@ module.exports = {
   app_url: process.env.ANUMATI_URL,
   client_api_key: process.env.CLIENT_API_KEY,
   rahasya_url: process.env.RAHASYA_URL,
-  redirect_url:process.env.REDIRECT_URL
+  redirect_url: process.env.REDIRECT_URL
 };

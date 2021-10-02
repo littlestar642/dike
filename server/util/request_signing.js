@@ -2,7 +2,10 @@ const rs = require("jsrsasign");
 const base64url = require("base64url");
 
 const makeDetachedJWS = (privateKey, body) => {
-  const header = { alg: "RS256", typ: "JWT" };
+  const header = {
+    alg: "RS256",
+    typ: "JWT"
+  };
   let jwt = rs.KJUR.jws.JWS.sign(null, header, body, privateKey);
   console.log(jwt);
   let splittedJWS = jwt.split(".");
@@ -21,4 +24,7 @@ const validateDetachedJWS = (detachedJWS, body, publicKey) => {
   return isValid; // boolean
 };
 
-module.exports = { makeDetachedJWS, validateDetachedJWS };
+module.exports = {
+  makeDetachedJWS,
+  validateDetachedJWS
+};
