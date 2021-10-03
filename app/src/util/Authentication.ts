@@ -48,7 +48,8 @@ class Authentication {
             try {
                 await Firebase.getInstance().getAuth().signInWithCredential(credentials);
                 return true;
-            } catch (err) {
+            } catch (err: any) {
+                console.error(err.message);
                 return false;
             }
         }
