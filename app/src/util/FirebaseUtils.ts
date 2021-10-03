@@ -1,60 +1,52 @@
 import firebase from 'firebase';
-import firebaseConfig from '../../google-services.json';
+import firebaseConfig from './google-services.json';
 
 class Firebase {
-  private static instance: Firebase;
+    private static instance: Firebase;
 
-  private auth: firebase.auth.Auth;
-  private authListeners: Array<(user: firebase.User | null) => void>;
+    private auth: firebase.auth.Auth;
+    private authListeners: Map<number, (user: firebase.User | null) => void>;
+    private unique: number;
+    
+    private firestore: firebase.firestore.Firestore;
 
-  private firestore: firebase.firestore.Firestore;
+    private constructor() {
+        firebase.initializeApp(firebaseConfig);
 
-  constructor() {
-    firebase.initializeApp(firebaseConfig);
-
-    this.auth = firebase.auth();
-    this.authListeners = [];
-    this.auth.onAuthStateChanged((user) => {
-      this.authListeners.forEach(callback => {
-        callback(user);
-      });
-    })
-
-    this.firestore = firebase.firestore();
-  }
-
-  static getInstance(): Firebase {
-    if (this.instance === null || this.instance === undefined) {
-      this.instance = new Firebase();
+        this.auth = firebase.auth();
+        this.authListeners = new Map();
+        this.unique = 0;
+        this.auth.onAuthStateChanged((user) => {
+            this.authListeners.forEach((callback, id, map) => {
+                try {
+                    callback(user);
+                } catch (err) {
+                    map.delete(id);
+                }
+            });
+        })
+        this.firestore = firebase.firestore();
     }
-    return this.instance;
-  }
 
-  addAuthChangeListener (callback: (user: firebase.User | null) => void): void {
-    this.authListeners.push(callback);
-  }
-
-  async createUser (email: string, password: string): Promise<firebase.auth.UserCredential | null> {
-    try {
-      return await this.auth.createUserWithEmailAndPassword(email, password);
-    } catch (err) {
-      console.error(`User with email ${email} already exists!`);
+    static getInstance(): Firebase {
+        if (this.instance === null || this.instance === undefined) {
+            this.instance = new Firebase();
+        }
+        return this.instance;
     }
-    return null;
-  }
 
-  async login (email: string, password: string): Promise<firebase.auth.UserCredential | null> {
-    try {
-      return await this.auth.signInWithEmailAndPassword(email, password);
-    } catch (err) {
-      console.error(`Login fail! Invalid email or password`);
+    addAuthChangeListener (callback: (user: firebase.User | null) => void): void {
+        this.authListeners.set(this.unique, callback);
+        this.unique ++;
     }
-    return null;
-  }
 
-  getFirestore (): firebase.firestore.Firestore {
-    return this.firestore;
-  }
+    getAuth (): firebase.auth.Auth {
+        return this.auth;
+    }
+
+    getFirestore (): firebase.firestore.Firestore {
+        return this.firestore;
+    }
 }
 
 export default Firebase;
