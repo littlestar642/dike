@@ -5,6 +5,7 @@ import { List } from '../screens/List';
 import { TextDemo, ButtonDemo, FormDemo } from '../screens/Demos';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
+import HomeScreen from '../screens/HomeScreen';
 
 export type MainStackParams = {
   List: undefined;
@@ -13,12 +14,18 @@ export type MainStackParams = {
   ButtonDemo: undefined;
   Login: undefined;
   Signup: undefined;
+  Home: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParams>();
 
 export const Main = () => (
   <MainStack.Navigator>
+    <MainStack.Screen
+      name="Home"
+      component={HomeScreen}
+      options={{ headerShown: false }}
+    />
     <MainStack.Screen name="Login" component={LoginScreen} />
     <MainStack.Screen name="Signup" component={SignupScreen} />
     {/* <MainStack.Screen
