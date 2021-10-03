@@ -19,7 +19,7 @@ export default class App extends Component {
         //pagingEnabled={true}
         horizontal={true}
         decelerationRate={0}
-        snapToInterval={width - 60}
+        snapToInterval={width - 100}
         snapToAlignment={'center'}
         contentInset={{
           top: 0,
@@ -28,11 +28,11 @@ export default class App extends Component {
           right: 30,
         }}
       >
-        <View style={styles.view} />
-        <View style={styles.view2} />
-        <View style={styles.view} />
-        <View style={styles.view2} />
-        <View style={styles.view} />
+        <View style={styles.cards} />
+        {/* <View style={styles.view2} /> */}
+        <View style={styles.cards} />
+        {/* <View style={styles.view2} /> */}
+        <View style={styles.cards} />
       </ScrollView>
     );
   }
@@ -43,18 +43,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  view: {
-    backgroundColor: 'blue',
-    width: width - 80,
+  cards: {
+    marginTop: 30,
+    backgroundColor: 'darkgrey',
+    width: width - 120,
     margin: 10,
-    height: 200,
-    borderRadius: 10,
-  },
-  view2: {
-    backgroundColor: 'red',
-    width: width - 80,
-    margin: 10,
-    height: 200,
+    height: 150,
     borderRadius: 10,
   },
 });
