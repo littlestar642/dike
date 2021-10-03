@@ -1,5 +1,5 @@
 const SignUp = async (req, res) => {
-    let userCreated = await req.firebase.createUser(req.user.uid, req.body.username, req.body.phoneNumber)
+    let userCreated = await req.firestore.createUser(req.user.uid, req.body.username, req.body.phoneNumber)
     if (userCreated.success) {
         res.status(200).send("user created successfully")
     } else {

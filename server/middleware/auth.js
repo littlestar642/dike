@@ -6,9 +6,9 @@ module.exports = async function (req, res, next) {
 
   if (!token) return res.status(400).send("Access Denied!, no token provided");
   try {
-    // const tokenStatus = await req.firebase.checkJWTToken(token)
+    // const tokenStatus = await req.firestore.checkJWTToken(token)
     if (true) {
-      userDetails = await req.firebase.getUserDetails(userID)
+      userDetails = await req.firestore.getUserDetails(userID)
       if (userDetails.success) {
         req.user = userDetails.msg;
         next();

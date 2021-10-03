@@ -1,6 +1,6 @@
 const defaultController = require("../controller/default.controller");
-const consentNotificationController = require("../controller/consentNotification.controller");
-const fiNotificationController = require("../controller/fiNotification.controller");
+const consentNotificationController = require("../controller/consent_notification.controller");
+const fiNotificationController = require("../controller/fi_notification.controller");
 
 const loginController = require("../controller/login.controller")
 

@@ -9,8 +9,8 @@ const fbsUtil = new firebaseUtil();
 const auth = require("./middleware/auth")
 
 // routers
-var usersRouter = require('./Routes/users.routes');
-var defaultRouter = require('./Routes/default.routes');
+var usersRouter = require('./routes/users.routes');
+var defaultRouter = require('./routes/default.routes');
 
 app.use(cors());
 app.use(express.json());
@@ -21,12 +21,12 @@ app.use(express.urlencoded({
 app.use(express.static("public"));
 
 app.use('/', (req, res, next) => {
-  req.firebase = fbsUtil;
+  req.firestore = fbsUtil;
   next();
 }, defaultRouter)
 
 app.use('/users', (req, res, next) => {
-  req.firebase = fbsUtil;
+  req.firestore = fbsUtil;
   next();
 }, auth, usersRouter);
 

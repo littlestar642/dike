@@ -21,13 +21,21 @@ const Consent = (req, res) => {
     };
 
     axios(requestConfig)
-        .then(function (response) {
+        .then(async function (response) {
+            let consentHandle = response.data.ConsentHandle
             let url =
                 config.app_url +
                 "/" +
-                response.data.ConsentHandle +
+                consentHandle +
                 `?redirect_url=${config.redirect_url}/redirectS`;
-            res.send(url);
+            let resp = await req.firestore.updateConsentHandleForUser(req.user.uid, consentHandle)
+            if (resp.success){
+                res.send(url);
+            }else{
+                console.log(resp)
+                res.status(500).send(resp.msg)
+            }
+            
         })
         .catch(function (error) {
             console.log(error);
