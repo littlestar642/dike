@@ -16,6 +16,9 @@ class Authentication {
     constructor() {
         this.firebaseInstance = Firebase.getInstance();
         this.firebaseInstance.addAuthChangeListener(this.changeAuthState);
+        this._user = this.firebaseInstance.getAuth().currentUser;
+        if (this._user !== null) this._isSignedIn = true;
+        else this._isSignedIn = false;
     }
 
     private changeAuthState (user: firebase.User | null) {
@@ -25,6 +28,7 @@ class Authentication {
         } else {
             this._isSignedIn = false;
         }
+        console.log(this.isSignedIn);
     }
 
     async beginPhoneVerification (phoneNumber: string, verifyRef: firebase.auth.ApplicationVerifier): 

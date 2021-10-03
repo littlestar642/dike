@@ -1,6 +1,7 @@
 import React from 'react';
-import { KeyboardAvoidingView, StyleSheet, Platform, View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import firebase from 'firebase';
 
 import colors from '../../constants/colors';
 import { Button } from '../../components/Button';
@@ -8,20 +9,82 @@ import { TextInput } from '../../components/Form';
 
 import { useSignin } from '../../util/auth';
 import { MainStackParams } from '../../navigation/Main';
+import PhoneVerification from '../../components/Authentication/PhoneVerification';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Authentication from '../../util/Authentication';
 
 type Props = {
-  navigation: StackNavigationProp<MainStackParams>;
+    mobile?: string;
+    navigation: StackNavigationProp<MainStackParams>;
 };
 
-const SignupScreen: React.ComponentType<Props> = (props:Props) => {
-  console.log('in signup');
-  return (
-    <View>
-      <Text>
-        Signup
-      </Text>
-    </View>
-  );
+type States = {
+    username: string;
+    mobile: string;
+    isVerificationSent: boolean;
+    isSignedIn: boolean;
+}
+
+class SignupScreen extends React.Component<Props, States> {
+    private phoneVerifier: React.RefObject<PhoneVerification>;
+    private auth: Authentication;
+
+    constructor (props: Props) {
+        super(props);
+        this.auth = new Authentication();
+        this.phoneVerifier = React.createRef();
+        this.state = {
+            username: '',
+            mobile: this.props.mobile || '',
+            isSignedIn: this.auth.isSignedIn,
+            isVerificationSent: this.auth.isSignedIn
+        };
+    }
+
+    updateVerificationSentState (verificationState: boolean) {
+        if (this.state.isVerificationSent !== verificationState) {
+            this.setState(state => {
+                return {
+                    ...state,
+                    isVerificationSent: verificationState
+                };
+            });
+        }
+    }
+
+    registerUser () {
+        console.log('register');
+    }
+
+    render() {
+        return (
+            <SafeAreaView style={styles.container}>
+                    <Text>SignUp</Text>
+                    <TextInput
+                        label='Name'
+                        placeholder='Full Name'
+                    />
+                    <PhoneVerification
+                        ref={this.phoneVerifier}
+                        default={this.props.mobile}
+                        disableEdit={this.state.isSignedIn}
+                        updateSentState={this.updateVerificationSentState}
+                    />
+                    { 
+                        !this.state.isSignedIn && !this.state.isVerificationSent && 
+                        <Button onPress={() => this.phoneVerifier.current?.sendPhoneVerifyRequest()}>Request OTP</Button>
+                    }
+                    {
+                        !this.state.isSignedIn && this.state.isVerificationSent &&
+                        <Button onPress={() => this.phoneVerifier.current?.verifyOtp()}>Verify OTP</Button>
+                    }
+                    {
+                        this.state.isSignedIn && this.state.isVerificationSent &&
+                        <Button onPress={() => this.registerUser()}>Register</Button>
+                    }
+            </SafeAreaView>
+        )
+    }
 }
 
 // const SignupScreen = ({ navigation }: Props) => {
@@ -98,10 +161,10 @@ const SignupScreen: React.ComponentType<Props> = (props:Props) => {
 export default SignupScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    padding: 10,
-    marginBottom: 20,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: colors.white,
+        paddingLeft: 10,
+        paddingRight: 10
+    },
 });

@@ -20,8 +20,8 @@ class Main extends Component {
   render() {
     return (
       <MainStack.Navigator>
-        <MainStack.Screen name="Signup" component={SignupScreen} />
         <MainStack.Screen name="Login" options={{headerShown: false}} component={LoginScreen} />
+        <MainStack.Screen name="Signup" component={SignupScreen} />
       </MainStack.Navigator>
     );
   }
