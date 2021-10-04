@@ -3,5 +3,5 @@ const Ping = (req, res) => {
 }
 
 module.exports = {
-    Ping,
+    Ping
 }

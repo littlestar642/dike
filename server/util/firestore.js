@@ -34,9 +34,55 @@ class FirestoreUtils {
     //     })
     // }
 
+    async saveProfileData(obj, consent_handle) {
+        return await this.firestore.collection("profile").add(obj).then(async (ref)=>{
+            console.log("Document written with ID: ", ref.id);
+            let uid = await this.firestore.collection("consentHandleMap").doc(consent_handle).get()
+            let result = await this.firestore.collection("users").doc(uid.ID).update({bankProfileID:ref.id})
+            return response.Success(result.writeTime)
+        }).catch(e=>{
+            console.log("error in saving doc", e)
+            return response.Failure(e)
+        })
+    }
+
+    async saveSummaryData(obj, consent_handle) {
+        return await this.firestore.collection("summary").add(obj).then(async (ref)=>{
+            console.log("Document written with ID: ", ref.id);
+            let uid = await this.firestore.collection("consentHandleMap").doc(consent_handle).get()
+            let result = await this.firestore.collection("users").doc(uid.ID).update({summaryID:ref.id})
+            return response.Success(result.writeTime)
+        }).catch(e=>{
+            console.log("error in saving doc", e)
+            return response.Failure(e)
+        })
+    }
+
+    async saveTransactionData(obj, consent_handle) {
+        return await this.firestore.collection("transactions").add(obj).then(async (ref)=>{
+            console.log("Document written with ID: ", ref.id);
+            let uid = await this.firestore.collection("consentHandleMap").doc(consent_handle).get()
+            let result = await this.firestore.collection("users").doc(uid.ID).update({transactionsID:ref.id})
+            return response.Success(result.writeTime)
+        }).catch(e=>{
+            console.log("error in saving doc", e)
+            return response.Failure(e)
+        })
+    }
+
+    async updateConsentHandleForUser(ID, consentHandle) {
+        try {
+            await this.firestore.collection("users").doc(ID).update({latestConsentHandle:consentHandle})
+            await this.firestore.collection("consentHandleMap").doc(consentHandle).create({ID})
+            return response.Success("success in updating consent handle")
+        } catch (e) {
+            console.log("error in updating consent handle for user", e)
+            return response.Failure(e)
+        }
+    }
+
     async createUser(ID, username, phoneNumber) {
-        let user = new User(ID, username, phoneNumber, -1, -1, -1, -1, -1, -1, -1)
-        console.log(user)
+        let user = new User(ID, username, phoneNumber,"", -1, -1, -1, -1, -1, -1, -1)
         try {
             let userRef = await this.firestore.collection("users").doc(ID).create(user)
             return response.Success(userRef)

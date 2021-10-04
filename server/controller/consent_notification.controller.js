@@ -5,6 +5,7 @@ const axios = require("axios");
 const cfg = require("../util/config")
 const signature = require("../util/request_signing");
 const requestData = require("../util/request_data");
+const decrypt_data = require("../util/decrypt_data");
 
 const ConsentNotification = (req, res) => {
     var body = req.body;
@@ -16,9 +17,10 @@ const ConsentNotification = (req, res) => {
     if (signature.validateDetachedJWS(headers["x-jws-signature"], body, pem)) {
         let consent_id = body.ConsentStatusNotification.consentId;
         let consent_status = body.ConsentStatusNotification.consentStatus;
+        let consent_handle = body.ConsentStatusNotification.consentHandle;
 
         if (consent_status === "ACTIVE") {
-            fetchSignedConsent(consent_id);
+            fetchSignedConsent(consent_id, consent_handle);
         }
 
         const dateNow = new Date();
@@ -33,7 +35,7 @@ const ConsentNotification = (req, res) => {
     }
 }
 
-const fetchSignedConsent = (consent_id) => {
+const fetchSignedConsent = (consent_id, consent_handle) => {
     const privateKey = cfg.getAAPrivateKey()
     let detachedJWS = signature.makeDetachedJWS(
         privateKey,
@@ -51,7 +53,7 @@ const fetchSignedConsent = (consent_id) => {
 
     axios(requestConfig)
         .then(function (response) {
-            fi_data_request(response.data.signedConsent, consent_id);
+            fi_data_request(response.data.signedConsent, consent_id, consent_handle);
         })
         .catch(function (error) {
             console.log(error);
@@ -59,7 +61,7 @@ const fetchSignedConsent = (consent_id) => {
         });
 };
 
-const fi_data_request = async (signedConsent, consent_id) => {
+const fi_data_request = async (signedConsent, consent_id, consent_handle) => {
     let keys = await requestData.generateKeyMaterial();
     let request_body = requestData.requestDataBody(
         signedConsent,
@@ -85,7 +87,8 @@ const fi_data_request = async (signedConsent, consent_id) => {
             fi_data_fetch(
                 response.data.sessionId,
                 keys["privateKey"],
-                keys["KeyMaterial"]
+                keys["KeyMaterial"],
+                consent_handle
             );
         })
         .catch(function (error) {
@@ -93,5 +96,31 @@ const fi_data_request = async (signedConsent, consent_id) => {
             console.log("Error");
         });
 };
+
+const fi_data_fetch = (session_id, encryption_privateKey, keyMaterial, consent_handle) => {
+    const privateKey = cfg.getAAPrivateKey()
+    let detachedJWS = signature.makeDetachedJWS(
+      privateKey,
+      "/FI/fetch/" + session_id
+    );
+    var requestConfig = {
+      method: "get",
+      url: config.api_url + "/FI/fetch/" + session_id,
+      headers: {
+        "Content-Type": "application/json",
+        client_api_key: config.client_api_key,
+        "x-jws-signature": detachedJWS,
+      },
+    };
+  
+    axios(requestConfig)
+      .then(function (response) {
+        decrypt_data(response.data.FI, encryption_privateKey, keyMaterial, consent_handle);
+      })
+      .catch(function (error) {
+        console.log(error);
+        console.log("Error");
+      });
+  };
 
 module.exports = ConsentNotification
