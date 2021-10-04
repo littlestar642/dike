@@ -7,6 +7,7 @@ import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/Authentication/LoginScreen";
 import SignupScreen from "../screens/Authentication/SignupScreen";
 import Firebase from "../util/FirebaseUtils";
+import { LinearGradient } from "expo-linear-gradient";
 
 export type MainStackParams = {
   Login: undefined;

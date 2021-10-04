@@ -1,39 +1,39 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React from "react";
+import { View, StyleSheet } from "react-native";
 
-import colors from '../constants/colors';
-import ExpensesOverview from '../components/ExpensesOverview';
-import Offers from '../components/Offers';
-import Transactions from '../components/Transactions';
+import colors from "../constants/colors";
+import ExpensesOverview from "../components/ExpensesOverview";
+import Offers from "../components/Offers";
+import Transactions from "../components/Transactions";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: "rgb(210, 242, 249)",
     paddingHorizontal: 5,
     // borderTopWidth: 2,
     // borderTopColor: 'grey',
   },
   components1: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: "rgb(210, 242, 249)",
     padding: 10,
     // borderTopWidth: 2,
     // borderTopColor: 'grey',
   },
   componnets2: {
     flex: 1.5,
-    backgroundColor: colors.white,
+    backgroundColor: "rgb(210, 242, 249)",
     padding: 10,
     borderTopWidth: 2,
-    borderTopColor: 'lightgrey',
+    borderTopColor: "rgb(120, 215, 237)",
   },
   componnets3: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: "rgb(210, 242, 249)",
     padding: 10,
     borderTopWidth: 2,
-    borderTopColor: 'lightgrey',
+    borderTopColor: "rgb(120, 215, 237)",
   },
 });
 

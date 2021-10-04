@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import colors from '../constants/colors';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
+import colors from "../constants/colors";
 
 const ExpensesOverview = () => {
   const numerator = 100;
@@ -9,7 +9,7 @@ const ExpensesOverview = () => {
     <View
       style={{
         flex: 1,
-        flexDirection: 'row',
+        flexDirection: "row",
       }}
     >
       <View style={styles.container1}>
@@ -30,14 +30,14 @@ export default ExpensesOverview;
 const styles = StyleSheet.create({
   container1: {
     flex: 2,
-    backgroundColor: 'lightgrey',
+    backgroundColor: "rgb(210, 242, 249)",
     padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   container2: {
     flex: 3,
-    backgroundColor: 'grey',
+    backgroundColor: "rgb(210, 242, 249)",
     padding: 10,
   },
   number1: {
@@ -45,14 +45,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     paddingTop: 30,
     fontSize: 50,
+    color: "rgb(6, 38, 45)",
   },
   number2: {
     flex: 1,
     fontSize: 50,
     marginBottom: 20,
+    color: "rgb(6, 38, 45)",
   },
   rows: {
     flex: 1,
     borderWidth: 1,
+    borderColor: "rgb(15, 94, 112)",
   },
 });
