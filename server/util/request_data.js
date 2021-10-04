@@ -1,11 +1,13 @@
-const uuid = require("./uuid");
+const uuid = require("uuid");
 var axios = require("axios");
 const config = require("./../config");
 
 ///// GENERATE KEYS
 
 const generateKeyMaterial = async () => {
-  const { data: response } = await axios.get(
+  const {
+    data: response
+  } = await axios.get(
     config.rahasya_url + "/ecc/v1/generateKey"
   );
   return response;
@@ -15,13 +17,17 @@ const generateKeyMaterial = async () => {
 
 const requestDataBody = (signedConsent, consent_id, keys) => {
   const dateNow = new Date();
+  const consentStart = new Date();
+  consentStart.setDate(dateNow.getDate() - 6 * 30)
+  const consentEnd = new Date();
+  consentEnd.setDate(dateNow.getDate() - 3 * 30)
   let data = JSON.stringify({
     ver: "1.0",
     timestamp: dateNow.toISOString(),
-    txnid: uuid.create_UUID(),
+    txnid: uuid.v4(),
     FIDataRange: {
-      from: "2018-12-06T11:39:57.153Z",
-      to: "2020-07-03T14:25:33.440Z",
+      from: consentStart.toISOString(),
+      to: consentEnd.toISOString(),
     },
 
     Consent: {
@@ -34,4 +40,7 @@ const requestDataBody = (signedConsent, consent_id, keys) => {
   return data;
 };
 
-module.exports = { requestDataBody, generateKeyMaterial };
+module.exports = {
+  requestDataBody,
+  generateKeyMaterial
+};

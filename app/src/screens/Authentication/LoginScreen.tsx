@@ -10,6 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Authentication from '../../util/Authentication';
 import PhoneVerification from '../../components/Authentication/PhoneVerification';
 import Firebase from '../../util/FirebaseUtils';
+import { LinearGradient } from "expo-linear-gradient";
+
 
 type Props = {
     navigation: StackNavigationProp<AuthStackParams>;
@@ -86,6 +88,12 @@ class LoginScreen extends React.Component<Props, States> {
     render () {
         return (
             <SafeAreaView style={styles.container}>
+                {/* <LinearGradient
+                    colors={["#2193b0", "#6dd5ed"]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.cards}
+                ></LinearGradient> */}
                 <View style={styles.centerVerticleContainer}>
                     <Text style={styles.title}>
                         Dike
@@ -119,22 +127,22 @@ class LoginScreen extends React.Component<Props, States> {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: colors.white,
-        padding: 10,
-    },
-    centerVerticleContainer: {
-        flexDirection: 'column',
-        alignItems: 'center'
-    },
-    title: {
-        fontSize: 32,
-        fontWeight: 'bold'
-    },
-    link: {
-        fontSize: 14,
-        textDecorationLine: 'underline',
-        color: '#2193b0'
-    }
+  container: {
+    flex: 1,
+    backgroundColor: colors.white,
+    padding: 10,
+  },
+  centerVerticleContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  link: {
+    fontSize: 14,
+    textDecorationLine: "underline",
+    color: "#2193b0",
+  },
 });

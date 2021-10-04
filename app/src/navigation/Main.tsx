@@ -1,13 +1,18 @@
-import React, { Component } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, { Component } from "react";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import LoginScreen from '../screens/Authentication/LoginScreen';
-import SignupScreen from '../screens/Authentication/SignupScreen';
-import Firebase from '../util/FirebaseUtils';
+import { List } from "../screens/List";
+import { TextDemo, ButtonDemo, FormDemo } from "../screens/Demos";
+import HomeScreen from "../screens/HomeScreen";
+import LoginScreen from "../screens/Authentication/LoginScreen";
+import SignupScreen from "../screens/Authentication/SignupScreen";
+import Firebase from "../util/FirebaseUtils";
+import { LinearGradient } from "expo-linear-gradient";
 
 export type AuthStackParams = {
   Login: undefined;
   Signup: undefined;
+  Home: undefined;
 };
 
 const MainStack = createStackNavigator<AuthStackParams>();
@@ -20,8 +25,17 @@ class Main extends Component {
   render() {
     return (
       <MainStack.Navigator>
-        <MainStack.Screen name="Login" options={{headerShown: false}} component={LoginScreen} />
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
         <MainStack.Screen name="Signup" component={SignupScreen} />
+        <MainStack.Screen
+          name="Login"
+          options={{ headerShown: false }}
+          component={LoginScreen}
+        />
       </MainStack.Navigator>
     );
   }
