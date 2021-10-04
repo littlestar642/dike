@@ -7,7 +7,7 @@ import { Text } from '../components/Text';
 import { Button } from '../components/Button';
 import { TextInput } from '../components/Form';
 import { useLogin } from '../util/auth';
-import { MainStackParams } from '../navigation/Main';
+import { AuthStackParams } from '../navigation/Main';
 
 const styles = StyleSheet.create({
   container: {
@@ -26,7 +26,7 @@ export const TextDemo = () => (
 );
 
 type Props = {
-  navigation: StackNavigationProp<MainStackParams>;
+  navigation: StackNavigationProp<AuthStackParams>;
 };
 
 export const FormDemo = ({ navigation }: Props) => {

@@ -5,12 +5,12 @@ import LoginScreen from '../screens/Authentication/LoginScreen';
 import SignupScreen from '../screens/Authentication/SignupScreen';
 import Firebase from '../util/FirebaseUtils';
 
-export type MainStackParams = {
+export type AuthStackParams = {
   Login: undefined;
   Signup: undefined;
 };
 
-const MainStack = createStackNavigator<MainStackParams>();
+const MainStack = createStackNavigator<AuthStackParams>();
 
 class Main extends Component {
   constructor(props: any) {

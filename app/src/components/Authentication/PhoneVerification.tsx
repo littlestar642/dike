@@ -3,12 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
 import config from '../../util/google-services.json';
 
-import colors from '../../constants/colors';
 import { TextInput } from '../../components/Form';
 
 import Authentication from '../../util/Authentication';
 import Common from '../../util/CommonUtils';
-import Firebase from '../../util/FirebaseUtils';
 
 type Props = {
     default?: string
@@ -36,7 +34,7 @@ class PhoneVerification extends React.Component<Props, States> {
             mobileNumberError: '',
             otp: '',
             otpError: '',
-            verifyRequestSent: false,
+            verifyRequestSent: this.props.disableEdit || false,
             confirmationCallback: null
         };
         this.auth = new Authentication();
@@ -79,14 +77,16 @@ class PhoneVerification extends React.Component<Props, States> {
             try {
                 if (this.recaptchaVerifier.current !== null) {
                     let callback = await this.auth.beginPhoneVerification('+91' + this.state.mobileNumber, this.recaptchaVerifier.current);
-                    this.setState(state => {
-                        return {
-                            ...state,
-                            verifyRequestSent: true,
-                            confirmationCallback: callback,
-                        }
-                    });
-                    return true;
+                    if (callback !== null) {
+                        this.setState(state => {
+                            return {
+                                ...state,
+                                verifyRequestSent: true,
+                                confirmationCallback: callback,
+                            }
+                        });
+                        return true;
+                    }
                 } else {
                     throw Error('Recaptcha Verifier not initialized');
                 }
@@ -166,7 +166,7 @@ class PhoneVerification extends React.Component<Props, States> {
                         autoCapitalize="none"
                     />
                     {
-                        this.state.verifyRequestSent &&        
+                        this.state.verifyRequestSent && !(this.props.disableEdit || false) &&        
                         <TextInput
                         label="OTP"
                         placeholder="6 digit OTP"

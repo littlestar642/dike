@@ -1,10 +1,12 @@
 import firebase from 'firebase';
+import URLs from '../constants/urls';
+import Common from './CommonUtils';
 import Firebase from './FirebaseUtils';
 
 class Authentication {
     private firebaseInstance: Firebase;
-    private _user: firebase.User | null = null;
-    private _isSignedIn: boolean = false;
+    private _user: firebase.User | null;
+    private _isSignedIn: boolean;
     
     public get currentUser(): firebase.User | null {
         return this._user;
@@ -28,7 +30,6 @@ class Authentication {
         } else {
             this._isSignedIn = false;
         }
-        console.log(this.isSignedIn);
     }
 
     async beginPhoneVerification (phoneNumber: string, verifyRef: firebase.auth.ApplicationVerifier): 
@@ -61,6 +62,33 @@ class Authentication {
 
     signOut () {
         this.firebaseInstance.getAuth().signOut();
+    }
+
+    async registerUser (name: string, phoneNumber: string) {
+        if (this._user === null || name.trim().length === 0) return false;
+        if (this._user.phoneNumber !== '+91' + phoneNumber) return false;
+        await this._user.updateProfile({displayName: name});
+        
+        let headers = new Headers();
+        headers.set('X_FIREBASE_TOKEN', await this._user.getIdToken());
+        headers.set('X_USER_ID', this._user.uid);
+        headers.set('Content-Type', 'application/json');
+
+        let result = await Common.makePostRequest(URLs.createUser,
+            {
+                username: name,
+                phoneNumber: phoneNumber
+            },
+            headers
+        );
+        // return JSON.parse(result).result; // TODO: Implement after api return change
+        return result === 'user created successfully';
+    }
+
+    async isUserRegistered () {
+        if (this._user === null) return false;
+        let userDoc = this.firebaseInstance.getFirestore().doc(`users/${this._user.uid}`);
+        return (await userDoc.get()).exists;
     }
 }
 

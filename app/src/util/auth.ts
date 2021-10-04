@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { Dispatch, SetStateAction } from 'react';
 import { Alert } from 'react-native';
-import { MainStackParams } from '../navigation/Main';
+import { AuthStackParams } from '../navigation/Main';
 import Firebase from './FirebaseUtils';
 
 type ErrorType = {
@@ -21,7 +21,7 @@ const useSignin = () => {
   const [errors, setErrors]: [ErrorType, Dispatch<SetStateAction<{}>>] =
     React.useState({});
 
-  const submit = (navigation: StackNavigationProp<MainStackParams>) => {
+  const submit = (navigation: StackNavigationProp<AuthStackParams>) => {
     const nextErrors: ErrorType = {};
     if (name.length === 0) {
       nextErrors.name = 'This field is required.';
@@ -79,7 +79,7 @@ const useLogin = () => {
   const [errors, setErrors]: [ErrorType, Dispatch<SetStateAction<{}>>] =
     React.useState({});
 
-  const submit = (navigation: StackNavigationProp<MainStackParams>) => {
+  const submit = (navigation: StackNavigationProp<AuthStackParams>) => {
     const nextErrors: ErrorType = {};
     if (email.length === 0) {
       nextErrors.email = 'This field is required.';

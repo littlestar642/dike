@@ -4,7 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 import colors from '../constants/colors';
 import { ListItem, ListSeparator } from '../components/List';
-import { MainStackParams } from '../navigation/Main';
+import { AuthStackParams } from '../navigation/Main';
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +33,7 @@ const screens = [
 ];
 
 type Props = {
-  navigation: StackNavigationProp<MainStackParams, 'List'>;
+  navigation: StackNavigationProp<AuthStackParams, 'List'>;
 };
 
 export const List = ({ navigation }: Props) => {

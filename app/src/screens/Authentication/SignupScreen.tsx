@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import firebase from 'firebase';
 
@@ -8,18 +8,18 @@ import { Button } from '../../components/Button';
 import { TextInput } from '../../components/Form';
 
 import { useSignin } from '../../util/auth';
-import { MainStackParams } from '../../navigation/Main';
+import { AuthStackParams } from '../../navigation/Main';
 import PhoneVerification from '../../components/Authentication/PhoneVerification';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Authentication from '../../util/Authentication';
 
 type Props = {
-    mobile?: string;
-    navigation: StackNavigationProp<MainStackParams>;
+    navigation: StackNavigationProp<AuthStackParams>;
 };
 
 type States = {
     username: string;
+    usernameError: string;
     mobile: string;
     isVerificationSent: boolean;
     isSignedIn: boolean;
@@ -35,9 +35,10 @@ class SignupScreen extends React.Component<Props, States> {
         this.phoneVerifier = React.createRef();
         this.state = {
             username: '',
-            mobile: this.props.mobile || '',
-            isSignedIn: this.auth.isSignedIn,
-            isVerificationSent: this.auth.isSignedIn
+            usernameError: '',
+            mobile: '',
+            isSignedIn: this.auth.isSignedIn || false,
+            isVerificationSent: this.auth.isSignedIn || false
         };
     }
 
@@ -52,23 +53,68 @@ class SignupScreen extends React.Component<Props, States> {
         }
     }
 
-    registerUser () {
-        console.log('register');
+    async registerUser () {
+        if (this.state.username === '' || this.state.username.trim().length === 0) {
+            this.setState(state => {
+                return {
+                    ...state,
+                    usernameError: 'Please enter your name'
+                }
+            })
+        } else {
+            let status = await this.auth.registerUser(this.state.username, this.phoneVerifier.current?.state.mobileNumber || '')
+            status && this.loadMain();
+        }
+    }
+
+    loadMain () {
+        // redirect to main screen;
+        Alert.alert('User registered');
+    }
+
+    componentWillUnmount () {
+        this.auth.signOut();
+    }
+
+    async verifyOtp () {
+        let signInState = await this.phoneVerifier.current?.verifyOtp();
+        this.setState(state => {
+            return {
+                ...state,
+                isSignedIn: signInState || false
+            };
+        });
+    }
+
+    updateName (name: string) {
+        this.setState(state => {
+            return {
+                ...state,
+                username: name,
+                usernameError: ''
+            };
+        });
     }
 
     render() {
+        let defaultMobile = this.auth.currentUser?.phoneNumber || '';
+        if (this.state.isSignedIn) {
+            defaultMobile = defaultMobile.substr(defaultMobile.length - 10, 10);
+        }
         return (
             <SafeAreaView style={styles.container}>
-                    <Text>SignUp</Text>
                     <TextInput
                         label='Name'
+                        value={this.state.username}
                         placeholder='Full Name'
+                        onChangeText={(name) => {this.updateName(name)}}
+                        errorText={this.state.usernameError}
                     />
                     <PhoneVerification
                         ref={this.phoneVerifier}
-                        default={this.props.mobile}
+                        default={defaultMobile}
                         disableEdit={this.state.isSignedIn}
-                        updateSentState={this.updateVerificationSentState}
+                        updateSentState={(flag) => {this.updateVerificationSentState(flag)}}
                     />
                     { 
                         !this.state.isSignedIn && !this.state.isVerificationSent && 
@@ -76,7 +122,7 @@ class SignupScreen extends React.Component<Props, States> {
                     }
                     {
                         !this.state.isSignedIn && this.state.isVerificationSent &&
-                        <Button onPress={() => this.phoneVerifier.current?.verifyOtp()}>Verify OTP</Button>
+                        <Button onPress={() => this.verifyOtp()}>Verify OTP</Button>
                     }
                     {
                         this.state.isSignedIn && this.state.isVerificationSent &&

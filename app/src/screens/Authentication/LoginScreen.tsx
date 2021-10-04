@@ -1,18 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, Text, TouchableWithoutFeedback, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 import colors from '../../constants/colors';
 import { Button } from '../../components/Button';
 
-import { MainStackParams } from '../../navigation/Main';
+import { AuthStackParams } from '../../navigation/Main';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Authentication from '../../util/Authentication';
 import PhoneVerification from '../../components/Authentication/PhoneVerification';
 import Firebase from '../../util/FirebaseUtils';
 
 type Props = {
-    navigation: StackNavigationProp<MainStackParams>;
+    navigation: StackNavigationProp<AuthStackParams>;
 };
 
 type States = {
@@ -21,7 +21,8 @@ type States = {
 
 class LoginScreen extends React.Component<Props, States> {
     private phoneVerifier: React.RefObject<PhoneVerification>;
-    private navigation: StackNavigationProp<MainStackParams>;
+    private navigation: StackNavigationProp<AuthStackParams>;
+    private authListenerId: number;
 
     constructor (props: Props) {
         super(props);
@@ -30,6 +31,9 @@ class LoginScreen extends React.Component<Props, States> {
         };
         this.navigation = props.navigation;
         this.phoneVerifier = React.createRef();
+        this.authListenerId = -1;
+        let auth = new Authentication();
+        auth.signOut();
     }
 
     async sendPhoneVerifyRequest () {
@@ -37,7 +41,6 @@ class LoginScreen extends React.Component<Props, States> {
     }
 
     updateVerificationSentState (verificationSentState: boolean) {
-        console.log('verify: ' + verificationSentState);
         if (this.state.verifyRequestSent !== verificationSentState) {
             this.setState(state => {
                 return {
@@ -49,15 +52,23 @@ class LoginScreen extends React.Component<Props, States> {
     }
 
     componentDidMount () {
-        console.log('loginMount');
         let firebaseInstance = Firebase.getInstance();
-        firebaseInstance.addAuthChangeListener((user) => {
-            if (user === null) {
-                // Alert.alert('No user logged in');
-            } else {
-                // Alert.alert(`User logged in with UID:\n${user.uid}`);
+        this.authListenerId = firebaseInstance.addAuthChangeListener(async (user) => {
+            if (user !== null) {
+                let auth = new Authentication();
+                if (!(await auth.isUserRegistered()))
+                {
+                    this.navigation.navigate('Signup');
+                } else {
+                    // Redirect to main page
+                    Alert.alert('User registered');
+                }
             }
         });
+    }
+
+    componentWillUnmount () {
+        Firebase.getInstance().removeAuthChangeListener(this.authListenerId);
     }
 
     async verifyOtp () {
@@ -66,9 +77,9 @@ class LoginScreen extends React.Component<Props, States> {
 
     openSignUpPage () {
         try {
-            this.navigation.push('Signup');
+            this.navigation.navigate('Signup');
         } catch (err: any) {
-            console.log(err.message);
+            console.error(err.message);
         }
     }
 
