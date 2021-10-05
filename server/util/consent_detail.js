@@ -17,7 +17,7 @@ const createData = (mobileNumber) => {
       consentMode: "VIEW",
       fetchType: "ONETIME",
       consentTypes: ["TRANSACTIONS", "PROFILE", "SUMMARY"],
-      fiTypes: ["DEPOSIT"],
+      fiTypes: ["DEPOSIT", "CREDIT_CARD", "SIP", "EQUITIES","MUTUAL_FUNDS"],
       DataConsumer: {
         id: "FIU"
       },
@@ -25,9 +25,9 @@ const createData = (mobileNumber) => {
         id: mobileNumber + "@setu-aa"
       },
       Purpose: {
-        code: "101",
+        code: "102",
         refUri: "https://api.rebit.org.in/aa/purpose/101.xml",
-        text: "Wealth management service",
+        text: "Customer spending patterns, budget or other reportings",
         Category: {
           type: "string"
         },

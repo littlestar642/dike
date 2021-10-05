@@ -7,7 +7,7 @@ const Success = (val) => {
 
 const Failure = (val) => {
     return {
-        msg: val,
+        msg: val.details.split(":")[0],
         success: false
     }
 }

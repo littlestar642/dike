@@ -8,12 +8,12 @@ module.exports = async function (req, res, next) {
   try {
     // const tokenStatus = await req.firestore.checkJWTToken(token)
     if (true) {
-      userDetails = await req.firestore.getUserDetails(userID)
-      if (userDetails.success) {
-        req.user = userDetails.msg;
+      resp = await req.firestore.getUserDetails(userID)
+      if (resp.success) {
+        req.user = resp.msg;
         next();
       } else {
-        res.status(500).send(`unable to fetch user details ${userDetails.msg}`)
+        res.status(500).send(`unable to fetch user details ${resp.msg}`)
       }
     } else {
       res.status(401).send("Unauthorised user")
