@@ -19,7 +19,6 @@ const transactionGroupMap = {
 }
 
 const decrypt_data = (fi, privateKey, keyMaterial, consent_handle) => {
-  console.log("%j", fi)
   fi.forEach(val=>{
     val.data.forEach(d=>{
       const body = {
@@ -30,19 +29,36 @@ const decrypt_data = (fi, privateKey, keyMaterial, consent_handle) => {
         remoteKeyMaterial: val["KeyMaterial"],
       };
 
-      if (val.fidId == "APNB"){
-        processBankData(body, requestConfig, consent_handle)
-      } else {
-        processStocksData(requestConfig, consent_handle)
+      if (val["fipId"] == "APNB"){
+        // processBankData(body, consent_handle)
+      } else if (val["fipId"] == "APMF")  {
+        // processStocksData(body, consent_handle)
       } 
-    })
-    
-
-      
+    })     
   })
 };
 
-const processBankData = (body, requestConfig, consent_handle) =>{
+const processBankData = (body, consent_handle) =>{
+  var requestConfig = {
+    method: "post",
+    url: config.rahasya_url + "/ecc/v1/decrypt",
+    data: body,
+  };
+
+  axios(requestConfig)
+    .then((res) => {
+      let base64Data = res.data["base64Data"];
+      let decoded_data = JSON.parse(Buffer.from(base64Data, "base64").toString("ascii"));
+      if (decoded_data["type"] == "deposit"){
+        processDecodedBankData(decoded_data, consent_handle)
+      } else if(decoded_data["type" == "credit_card"]){
+        processDecodedCreditCardData()
+      }
+    })
+    .catch((err) => console.log(err.data.error));
+}
+
+const processStocksData = (body, requestConfig, consent_handle) =>{
   var requestConfig = {
     method: "post",
     url: config.rahasya_url + "/ecc/v1/decrypt",
@@ -53,21 +69,15 @@ const processBankData = (body, requestConfig, consent_handle) =>{
     .then((res) => {
       let base64Data = res.data["base64Data"];
       let decoded_data = Buffer.from(base64Data, "base64").toString("ascii");
+      console.log("stocks",decoded_data)
 
-      processDecodedBankData(JSON.parse(decoded_data), consent_handle)
+      // processDecodedStocksData(JSON.parse(decoded_data), consent_handle)
     })
     .catch((err) => console.log(err.data.error));
 }
 
-const processStocksData = (requestConfig, consent_handle) =>{
-  axios(requestConfig)
-    .then((res) => {
-      let base64Data = res.data["base64Data"];
-      let decoded_data = Buffer.from(base64Data, "base64").toString("ascii");
+const processDecodedCreditCardData = (data,consent_handle) =>{
 
-      processDecodedStocksData(JSON.parse(decoded_data), consent_handle)
-    })
-    .catch((err) => console.log(err.data.error));
 }
 
 const processDecodedBankData = (data, consent_handle) => {
@@ -78,7 +88,7 @@ const processDecodedBankData = (data, consent_handle) => {
   processSummaryData(summaryData,consent_handle)
   let transactions = data.account.transactions.transaction
   processTransactionData(transactions,consent_handle)
-  createTransactionInsights(transactions,consent_handle)
+  // createTransactionInsights(transactions,consent_handle)
 }
 
 const processProfileData = (data, consent_handle) => {
