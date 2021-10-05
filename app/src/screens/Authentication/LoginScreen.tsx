@@ -7,14 +7,16 @@ import { Button } from '../../components/Button';
 
 import { AuthStackParams } from '../../navigation/Main';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Authentication from '../../util/Authentication';
+import Authentication, { AuthState } from '../../util/Authentication';
 import PhoneVerification from '../../components/Authentication/PhoneVerification';
 import Firebase from '../../util/FirebaseUtils';
 import { LinearGradient } from "expo-linear-gradient";
 
+export type ViewProps = {} | undefined;
 
 type Props = {
     navigation: StackNavigationProp<AuthStackParams>;
+    route: ViewProps;
 };
 
 type States = {
@@ -24,7 +26,7 @@ type States = {
 class LoginScreen extends React.Component<Props, States> {
     private phoneVerifier: React.RefObject<PhoneVerification>;
     private navigation: StackNavigationProp<AuthStackParams>;
-    private authListenerId: number;
+    private auth: Authentication;
 
     constructor (props: Props) {
         super(props);
@@ -33,9 +35,15 @@ class LoginScreen extends React.Component<Props, States> {
         };
         this.navigation = props.navigation;
         this.phoneVerifier = React.createRef();
-        this.authListenerId = -1;
-        let auth = new Authentication();
-        auth.signOut();
+        this.auth = new Authentication();
+        this.auth.signOut();
+        this.navigation.addListener('focus', (event) => {
+            this.auth.signOut();
+        })
+    }
+    
+    componentDidMount() {
+        this.auth.userRegisterStateUpdateCallback = ((authState) => {this.updateAuthState(authState)});
     }
 
     async sendPhoneVerifyRequest () {
@@ -53,24 +61,10 @@ class LoginScreen extends React.Component<Props, States> {
         }
     }
 
-    componentDidMount () {
-        let firebaseInstance = Firebase.getInstance();
-        this.authListenerId = firebaseInstance.addAuthChangeListener(async (user) => {
-            if (user !== null) {
-                let auth = new Authentication();
-                if (!(await auth.isUserRegistered()))
-                {
-                    this.navigation.navigate('Signup');
-                } else {
-                    // Redirect to main page
-                    Alert.alert('User registered');
-                }
-            }
-        });
-    }
-
-    componentWillUnmount () {
-        Firebase.getInstance().removeAuthChangeListener(this.authListenerId);
+    updateAuthState(authState: number) {
+        if (authState === AuthState.NOTREGISTERED) {
+            this.navigation.navigate('Signup');
+        }
     }
 
     async verifyOtp () {

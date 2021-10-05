@@ -1,5 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import colors from "../constants/colors";
 import ExpensesOverview from "../components/ExpensesOverview";
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
 
 const HomeScreen = () => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.components1}>
         <ExpensesOverview />
       </View>
@@ -49,7 +50,7 @@ const HomeScreen = () => {
       <View style={styles.componnets3}>
         <Offers></Offers>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -12,15 +12,18 @@ import { AuthStackParams } from '../../navigation/Main';
 import PhoneVerification from '../../components/Authentication/PhoneVerification';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Authentication from '../../util/Authentication';
+import Firebase from '../../util/FirebaseUtils';
+
+export type ViewProps = {} | undefined;
 
 type Props = {
     navigation: StackNavigationProp<AuthStackParams>;
+    route: ViewProps;
 };
 
 type States = {
     username: string;
     usernameError: string;
-    mobile: string;
     isVerificationSent: boolean;
     isSignedIn: boolean;
 }
@@ -36,7 +39,6 @@ class SignupScreen extends React.Component<Props, States> {
         this.state = {
             username: '',
             usernameError: '',
-            mobile: '',
             isSignedIn: this.auth.isSignedIn || false,
             isVerificationSent: this.auth.isSignedIn || false
         };
@@ -54,7 +56,7 @@ class SignupScreen extends React.Component<Props, States> {
     }
 
     async registerUser () {
-        if (this.state.username === '' || this.state.username.trim().length === 0) {
+        if (this.state.username.trim().length === 0) {
             this.setState(state => {
                 return {
                     ...state,
@@ -62,18 +64,8 @@ class SignupScreen extends React.Component<Props, States> {
                 }
             })
         } else {
-            let status = await this.auth.registerUser(this.state.username, this.phoneVerifier.current?.state.mobileNumber || '')
-            status && this.loadMain();
+            await this.auth.registerUser(this.state.username, this.phoneVerifier.current?.state.mobileNumber || '');
         }
-    }
-
-    loadMain () {
-        // redirect to main screen;
-        Alert.alert('User registered');
-    }
-
-    componentWillUnmount () {
-        this.auth.signOut();
     }
 
     async verifyOtp () {
@@ -97,7 +89,7 @@ class SignupScreen extends React.Component<Props, States> {
     }
 
     render() {
-        let defaultMobile = this.auth.currentUser?.phoneNumber || '';
+        let defaultMobile = Firebase.getInstance().getAuth().currentUser?.phoneNumber || '';
         if (this.state.isSignedIn) {
             defaultMobile = defaultMobile.substr(defaultMobile.length - 10, 10);
         }
@@ -132,77 +124,6 @@ class SignupScreen extends React.Component<Props, States> {
         )
     }
 }
-
-// const SignupScreen = ({ navigation }: Props) => {
-//   const {
-//     submit,
-//     errors,
-//     name,
-//     setName,
-//     email,
-//     setEmail,
-//     number,
-//     setNumber,
-//     password,
-//     setPassword,
-//     passwordConf,
-//     setPasswordConf,
-//   } = useSignin();
-
-//   return (
-//     <View style={{ flex: 1 }}>
-//       <KeyboardAvoidingView behavior="position" style={styles.container}>
-//         <TextInput
-//           label="Name"
-//           placeholder="Enter your name"
-//           value={name}
-//           onChangeText={(text: string) => setName(text)}
-//           errorText={errors.name}
-//           keyboardType="email-address"
-//           autoCapitalize="none"
-//         />
-//         <TextInput
-//           label="Email Address"
-//           placeholder="Enter your email"
-//           value={email}
-//           onChangeText={(text: string) => setEmail(text)}
-//           errorText={errors.email}
-//           keyboardType="email-address"
-//           autoCapitalize="none"
-//         />
-//         <TextInput
-//           label="Phone Number"
-//           placeholder="Enter your phone no."
-//           value={number}
-//           onChangeText={(text: string) => setNumber(text)}
-//           errorText={errors.number}
-//           keyboardType="email-address"
-//           autoCapitalize="none"
-//         />
-//         <TextInput
-//           label="Password"
-//           placeholder="Enter your password"
-//           value={password}
-//           onChangeText={(text: string) => setPassword(text)}
-//           secureTextEntry
-//           errorText={errors.password}
-//           autoCapitalize="none"
-//         />
-//         <TextInput
-//           label="Confirm Password"
-//           placeholder="Enter your password again"
-//           value={passwordConf}
-//           onChangeText={(text: string) => setPasswordConf(text)}
-//           secureTextEntry
-//           errorText={errors.passwordConf}
-//           autoCapitalize="none"
-//         />
-//         <Button onPress={() => submit(navigation)}>Sign Up</Button>
-//         {/* <View style={{ height: 5 }}></View> */}
-//       </KeyboardAvoidingView>
-//     </View>
-//   );
-// };
 
 export default SignupScreen;
 
