@@ -16,7 +16,7 @@ class FirestoreUtils {
         admin.initializeApp({
             credential: admin.credential.cert(adminConfig)
         });
-        this.firestore = admin.firestore();
+        this.firestore = admin.firestore(); 
     }
 
     static GetInstance() {

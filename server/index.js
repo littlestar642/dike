@@ -3,7 +3,6 @@ const cors = require("cors");
 const app = express();
 const config = require("./config");
 const firebaseUtil = require("./util/firestore")
-const fbsUtil = new firebaseUtil();
 
 // middlewares
 const auth = require("./middleware/auth")
@@ -21,12 +20,12 @@ app.use(express.urlencoded({
 app.use(express.static("public"));
 
 app.use('/', (req, res, next) => {
-  req.firestore = fbsUtil;
+  req.firestore = firebaseUtil.GetInstance();
   next();
 }, defaultRouter)
 
 app.use('/users', (req, res, next) => {
-  req.firestore = fbsUtil;
+  req.firestore = firebaseUtil.GetInstance();
   next();
 }, auth, usersRouter);
 

@@ -9,8 +9,6 @@ const FINotifcation = (req, res) => {
   let obj = JSON.parse(cfg.getSetuPublicKey());
   let pem = jwkToPem(obj);
 
-  console.log("inside fi notificaiton")
-
   if (signature.validateDetachedJWS(headers["x-jws-signature"], body, pem)) {
     // Do something with body
     // Ideally you wait for this notification and then proceed with Data fetch request.

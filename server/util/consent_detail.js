@@ -2,7 +2,8 @@ const uuid = require("uuid");
 
 const createData = (mobileNumber) => {
   const dateNow = new Date();
-  const expiry = new Date(dateNow.getTime() + 600000);
+  const expiry = new Date();
+  expiry.setDate(dateNow.getDate() + 7)
   const consentStart = new Date();
   consentStart.setDate(dateNow.getDate() - 6 * 30)
   const consentEnd = new Date();
@@ -17,7 +18,7 @@ const createData = (mobileNumber) => {
       consentMode: "VIEW",
       fetchType: "ONETIME",
       consentTypes: ["TRANSACTIONS", "PROFILE", "SUMMARY"],
-      fiTypes: ["DEPOSIT"],
+      fiTypes: ["DEPOSIT","CREDIT_CARD","MUTUAL_FUNDS","EQUITIES","SIP"],
       DataConsumer: {
         id: "FIU"
       },
@@ -25,9 +26,9 @@ const createData = (mobileNumber) => {
         id: mobileNumber + "@setu-aa"
       },
       Purpose: {
-        code: "101",
+        code: "102",
         refUri: "https://api.rebit.org.in/aa/purpose/101.xml",
-        text: "Wealth management service",
+        text: "Customer spending patterns, budget or other reportings",
         Category: {
           type: "string"
         },
