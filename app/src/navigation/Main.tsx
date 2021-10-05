@@ -1,41 +1,71 @@
 import React, { Component } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import { List } from "../screens/List";
-import { TextDemo, ButtonDemo, FormDemo } from "../screens/Demos";
 import HomeScreen from "../screens/HomeScreen";
-import LoginScreen from "../screens/Authentication/LoginScreen";
-import SignupScreen from "../screens/Authentication/SignupScreen";
-import Firebase from "../util/FirebaseUtils";
-import { LinearGradient } from "expo-linear-gradient";
+import LoginScreen, { ViewProps as LoginProps } from "../screens/Authentication/LoginScreen";
+import SignupScreen, { ViewProps as SignupProps } from "../screens/Authentication/SignupScreen";
+import Authentication, { AuthState } from "../util/Authentication";
 
-export type MainStackParams = {
-  Login: undefined;
-  Signup: undefined;
+export type AuthStackParams = {
+  Login: LoginProps;
+  Signup: SignupProps;
   Home: undefined;
 };
 
-const MainStack = createStackNavigator<MainStackParams>();
+const MainStack = createStackNavigator<AuthStackParams>();
 
-class Main extends Component {
+type States = {
+  isAuthComplete: boolean;
+}
+
+class Main extends Component<any, States> {
+  private auth: Authentication | undefined;
+
   constructor(props: any) {
     super(props);
+    this.state = {
+      isAuthComplete: false
+    };
+  }
+  
+  componentDidMount() {
+    this.auth = new Authentication((authState:number) => {this.listenAuthState(authState)});
+  }
+
+  listenAuthState(authState:number) {
+    try {
+      this.setState((state) => {
+        return {
+          isAuthComplete: authState === AuthState.REGISTERED
+        };
+      });
+    } catch (err) {
+      console.log('Main.tsx: ', err);
+    }
   }
 
   render() {
     return (
       <MainStack.Navigator>
-        <MainStack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-        <MainStack.Screen name="Signup" component={SignupScreen} />
-        <MainStack.Screen
-          name="Login"
-          options={{ headerShown: false }}
-          component={LoginScreen}
-        />
+        { this.state.isAuthComplete ? 
+          (<MainStack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />) : (
+          <>
+            <MainStack.Screen
+              name="Login"
+              options={{ headerShown: false }}
+              component={LoginScreen}
+            />
+            <MainStack.Screen
+              name="Signup"
+              component={SignupScreen}
+            />
+          </>
+          )
+        }
       </MainStack.Navigator>
     );
   }

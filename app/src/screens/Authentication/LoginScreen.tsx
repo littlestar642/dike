@@ -1,247 +1,121 @@
-import React from "react";
-import { StyleSheet, View, Text, TouchableWithoutFeedback } from "react-native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import config from "../../util/google-services.json";
+import React from 'react';
+import { StyleSheet, View, Text, TouchableWithoutFeedback, Alert } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-import colors from "../../constants/colors";
-import { Button } from "../../components/Button";
-import { TextInput } from "../../components/Form";
+import colors from '../../constants/colors';
+import { Button } from '../../components/Button';
 
-import { MainStackParams } from "../../navigation/Main";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Authentication from "../../util/Authentication";
-import Common from "../../util/CommonUtils";
-import Firebase from "../../util/FirebaseUtils";
+import { AuthStackParams } from '../../navigation/Main';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Authentication, { AuthState } from '../../util/Authentication';
+import PhoneVerification from '../../components/Authentication/PhoneVerification';
+import Firebase from '../../util/FirebaseUtils';
 import { LinearGradient } from "expo-linear-gradient";
 
+export type ViewProps = {} | undefined;
+
 type Props = {
-  navigation: StackNavigationProp<MainStackParams>;
+    navigation: StackNavigationProp<AuthStackParams>;
+    route: ViewProps;
 };
 
 type States = {
-  mobileNumber: string;
-  mobileNumberError: string;
-  otp: string;
-  otpError: string;
-  verifyRequestSent: boolean;
-  confirmationCallback: ((verificationCode: string) => Promise<boolean>) | null;
+    verifyRequestSent: boolean;
 };
 
 class LoginScreen extends React.Component<Props, States> {
-  private auth: Authentication;
-  private recaptchaVerifier: React.RefObject<FirebaseRecaptchaVerifierModal>;
-  private navigation: StackNavigationProp<MainStackParams>;
+    private phoneVerifier: React.RefObject<PhoneVerification>;
+    private navigation: StackNavigationProp<AuthStackParams>;
+    private auth: Authentication;
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      mobileNumber: "",
-      mobileNumberError: "",
-      otp: "",
-      otpError: "",
-      verifyRequestSent: false,
-      confirmationCallback: null,
-    };
-    this.navigation = props.navigation;
-    this.auth = new Authentication();
-    this.recaptchaVerifier = React.createRef();
-  }
-
-  updateMobileNumber(mobile: string) {
-    this.setState((state) => {
-      return {
-        ...state,
-        mobileNumber: mobile,
-        mobileNumberError: "",
-        otp: "",
-        otpError: "",
-        verifyRequestSent: false,
-        confirmationCallback: null,
-      };
-    });
-  }
-
-  updateOtp(otp: string) {
-    this.setState((state) => {
-      return {
-        ...state,
-        otp: otp,
-        otpError: "",
-      };
-    });
-  }
-
-  async sendPhoneVerifyRequest() {
-    if (Common.regex.phone.test(this.state.mobileNumber)) {
-      try {
-        if (this.recaptchaVerifier.current !== null) {
-          let callback = await this.auth.beginPhoneVerification(
-            "+91" + this.state.mobileNumber,
-            this.recaptchaVerifier.current
-          );
-          this.setState((state) => {
-            return {
-              ...state,
-              verifyRequestSent: true,
-              confirmationCallback: callback,
-            };
-          });
-        } else {
-          throw Error("Recaptcha Verifier not initialized");
-        }
-      } catch (err: any) {
-        let error = "Some unknown error occured. Please try again later";
-        this.setState((state) => {
-          return {
-            ...state,
-            mobileNumberError: error,
-          };
-        });
-        console.error("Phone auth error", err.message);
-      }
-    } else {
-      let error = "Please enter a valid mobile number";
-      this.setState((state) => {
-        return {
-          ...state,
-          mobileNumberError: error,
+    constructor (props: Props) {
+        super(props);
+        this.state = {
+            verifyRequestSent: false
         };
-      });
+        this.navigation = props.navigation;
+        this.phoneVerifier = React.createRef();
+        this.auth = new Authentication();
+        this.auth.signOut();
+        this.navigation.addListener('focus', (event) => {
+            this.auth.signOut();
+        })
     }
-  }
+    
+    componentDidMount() {
+        this.auth.userRegisterStateUpdateCallback = ((authState) => {this.updateAuthState(authState)});
+    }
 
-  componentDidMount() {
-    // let firebaseInstance = Firebase.getInstance();
-    // firebaseInstance.addAuthChangeListener((user) => {
-    //     if (user === null) {
-    //         // Alert.alert('No user logged in');
-    //     } else {
-    //         // Alert.alert(`User logged in with UID:\n${user.uid}`);
-    //     }
-    // });
-  }
+    async sendPhoneVerifyRequest () {
+        await this.phoneVerifier.current?.sendPhoneVerifyRequest();
+    }
 
-  async verifyOtp() {
-    if (Common.regex.otp.test(this.state.otp)) {
-      try {
-        if (this.state.confirmationCallback !== null) {
-          if (!(await this.state.confirmationCallback(this.state.otp))) {
-            this.setState((state) => {
-              return {
-                ...state,
-                otpError: "Invalid OTP",
-              };
+    updateVerificationSentState (verificationSentState: boolean) {
+        if (this.state.verifyRequestSent !== verificationSentState) {
+            this.setState(state => {
+                return {
+                    ...state,
+                    verifyRequestSent: verificationSentState
+                };
             });
-          }
-        } else {
-          throw Error("Phone auth verification callback not set");
         }
-      } catch (err: any) {
-        let error = "Some unknown error occured. Please try again later";
-        this.setState((state) => {
-          return {
-            ...state,
-            otpError: error,
-          };
-        });
-        console.error("Phone auth error", err.message);
-      }
-    } else {
-      let error = "Please enter a valid OTP";
-      this.setState((state) => {
-        return {
-          ...state,
-          otpError: error,
-        };
-      });
     }
-  }
 
-  openSignUpPage() {
-    console.log("signup");
-    try {
-      this.navigation.push("Signup");
-    } catch (err: any) {
-      console.log(err.message);
+    updateAuthState(authState: number) {
+        if (authState === AuthState.NOTREGISTERED) {
+            this.navigation.navigate('Signup');
+        }
     }
-  }
 
-  render() {
-    return (
-      <SafeAreaView style={styles.container}>
-        {/* <LinearGradient
-          colors={["#2193b0", "#6dd5ed"]}
-          start={{
-            x: 0,
-            y: 0,
-          }}
-          end={{
-            x: 1,
-            y: 1,
-          }}
-          style={{
-            flex: 1,
-          }}
-        > */}
-        <View style={styles.centerVerticleContainer}>
-          <Text style={styles.title}>Dike</Text>
-        </View>
-        <FirebaseRecaptchaVerifierModal
-          ref={this.recaptchaVerifier}
-          firebaseConfig={config}
-          androidHardwareAccelerationDisabled={true}
-          attemptInvisibleVerification={true}
-        />
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <TextInput
-            label="Mobile"
-            placeholder="10 digit mobile number"
-            maxLength={10}
-            value={this.state.mobileNumber}
-            onChangeText={(text: string) => this.updateMobileNumber(text)}
-            errorText={this.state.mobileNumberError}
-            keyboardType="phone-pad"
-            autoCapitalize="none"
-          />
-          {this.state.verifyRequestSent ? (
-            <View>
-              <TextInput
-                label="OTP"
-                placeholder="6 digit OTP"
-                maxLength={6}
-                value={this.state.otp}
-                onChangeText={(text: string) => this.updateOtp(text)}
-                errorText={this.state.otpError}
-                keyboardType="numeric"
-                autoCapitalize="none"
-              />
-              <Button onPress={() => this.verifyOtp()}>Verify Otp</Button>
-            </View>
-          ) : (
-            <Button onPress={() => this.sendPhoneVerifyRequest()}>Login</Button>
-          )}
-          <View style={styles.centerVerticleContainer}>
-            <TouchableWithoutFeedback
-              onPress={() => {
-                this.openSignUpPage();
-              }}
-            >
-              <Text style={styles.link}>Not registered yet! SignUp</Text>
-            </TouchableWithoutFeedback>
-          </View>
-        </View>
-        <Button onPress={() => this.auth.signOut()}>SignOut</Button>
-        {/* </LinearGradient> */}
-      </SafeAreaView>
-    );
-  }
+    async verifyOtp () {
+        await this.phoneVerifier.current?.verifyOtp();
+    }
+
+    openSignUpPage () {
+        try {
+            this.navigation.navigate('Signup');
+        } catch (err: any) {
+            console.error(err.message);
+        }
+    }
+
+    render () {
+        return (
+            <SafeAreaView style={styles.container}>
+                {/* <LinearGradient
+                    colors={["#2193b0", "#6dd5ed"]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.cards}
+                ></LinearGradient> */}
+                <View style={styles.centerVerticleContainer}>
+                    <Text style={styles.title}>
+                        Dike
+                    </Text>
+                </View>
+                <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
+                    <PhoneVerification
+                        ref={this.phoneVerifier}
+                        updateSentState={(state: boolean) => {this.updateVerificationSentState(state);}}
+                    />
+                    {
+                        this.state.verifyRequestSent ? (
+                            <Button onPress={() => this.verifyOtp()}>Verify Otp</Button>
+                        ) : (
+                            <Button onPress={() => this.sendPhoneVerifyRequest()}>Login</Button>
+                        )
+                    }
+                    <View style={styles.centerVerticleContainer}>
+                    <TouchableWithoutFeedback onPress={() => {this.openSignUpPage()}}>
+                        <Text style={styles.link}>
+                            Not registered yet! SignUp
+                        </Text>
+                    </TouchableWithoutFeedback>
+                    </View>
+                </View>
+            </SafeAreaView>
+        )
+    }
 }
 
 export default LoginScreen;

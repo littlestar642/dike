@@ -35,9 +35,13 @@ class Firebase {
         return this.instance;
     }
 
-    addAuthChangeListener (callback: (user: firebase.User | null) => void): void {
+    addAuthChangeListener (callback: (user: firebase.User | null) => void): number {
         this.authListeners.set(this.unique, callback);
-        this.unique ++;
+        return this.unique ++;
+    }
+
+    removeAuthChangeListener (listenerId: number) {
+        this.authListeners.delete(listenerId);
     }
 
     getAuth (): firebase.auth.Auth {

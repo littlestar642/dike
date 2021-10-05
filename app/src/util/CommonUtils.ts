@@ -1,5 +1,5 @@
 class Common {
-    static async makePostRequest (url: string, body: object, headers: Record<string, string>): Promise<string> {
+    static async makePostRequest (url: string, body: object, headers: HeadersInit): Promise<string> {
         let content = await fetch(url, {
             method: 'POST',
             headers: headers,
