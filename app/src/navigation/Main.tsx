@@ -10,12 +10,16 @@ import SignupScreen, {
 } from "../screens/Authentication/SignupScreen";
 import Authentication, { AuthState } from "../util/Authentication";
 import UserProfileScreen from "../screens/UserProfileScreen";
+import BankDetailsScreen from "../screens/BankDetalisScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
 export type AuthStackParams = {
   Login: LoginProps;
   Signup: SignupProps;
   Home: undefined;
   Profile: undefined;
+  Bank: undefined;
+  Settings: undefined;
 };
 
 const MainStack = createStackNavigator<AuthStackParams>();
@@ -56,12 +60,29 @@ class Main extends Component<any, States> {
     return (
       <MainStack.Navigator>
         {
-          /* {this.state.isAuthComplete */ true ? (
-            <MainStack.Screen
-              name="Profile"
-              component={UserProfileScreen}
-              options={{ headerShown: false }}
-            />
+          /* {this.state.isAuthComplete }*/ true ? (
+            <>
+              <MainStack.Screen
+                name="Profile"
+                component={UserProfileScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Bank"
+                component={BankDetailsScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{ headerShown: false }}
+              />
+            </>
           ) : (
             <>
               <MainStack.Screen
