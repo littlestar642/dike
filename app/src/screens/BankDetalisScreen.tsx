@@ -1,6 +1,6 @@
 import React from "react";
-import { SafeAreaView, Text } from "react-native";
-
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 class BankDetailsScreen extends React.Component {
   render() {
     return (
