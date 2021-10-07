@@ -43,6 +43,11 @@ const Consent = (req, res) => {
         });
 }
 
+const GetUserTransactions = async (req,res) =>{
+    let val = await req.firestore.FetchTrasactionsForUser(req.user["uid"])
+    res.send(val["transaction"])
+}
+
 const GetData = async (req, res) => {
     let val = await firebaseUtil.GetInstance().get("fidata/doc")
     res.send(val);
@@ -50,5 +55,6 @@ const GetData = async (req, res) => {
 
 module.exports = {
     Consent,
-    GetData
+    GetData,
+    GetUserTransactions
 }

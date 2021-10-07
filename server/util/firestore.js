@@ -6,6 +6,7 @@ const {
 const cfg = require("./config")
 const response = require("./response")
 const User = require("../models/user")
+const constants = require("../constants/constants")
 
 class FirestoreUtils {
     static instance;
@@ -34,40 +35,104 @@ class FirestoreUtils {
     //     })
     // }
 
+    async getUserDetailsFromConsentHandle(consent_handle){
+        let uid = (await this.firestore.collection("consentHandleMap").doc(consent_handle).get()).data().ID
+        return await (await this.firestore.collection("users").doc(uid).get()).data()
+    }
+
+    async updateDataConsentStatus(consent_handle, consent_status){
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        let status = constants.dataConsentStatus[consent_status]
+        let val = await this.firestore.collection("users").doc(userDetails.ID).update({FIDataConsentStatus:status})
+        if (val.writeTime){
+            return response.Success("updated successfully")
+        } else{
+            console.log(val)
+            return response.Failure("failed updating")
+        }
+    }
+
+    async updateDataFetchStatus(consent_handle, fetch_status){
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        let status = constants.dataFetchStatus[fetch_status]
+        let val = await this.firestore.collection("users").doc(userDetails.ID).update({FIDataFetchStatus:status})
+        if (val.writeTime){
+            return response.Success("updated successfully")
+        } else{
+            console.log(val)
+            return response.Failure("failed updating")
+        }
+    }
+
     async saveProfileData(obj, consent_handle) {
-        return await this.firestore.collection("profile").add(obj).then(async (ref)=>{
-            console.log("Document written with ID: ", ref.id);
-            let uid = await this.firestore.collection("consentHandleMap").doc(consent_handle).get()
-            let result = await this.firestore.collection("users").doc(uid.ID).update({bankProfileID:ref.id})
-            return response.Success(result.writeTime)
-        }).catch(e=>{
-            console.log("error in saving doc", e)
-            return response.Failure(e)
-        })
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        if (userDetails.bankProfileID !== -1){
+            let updateRes = await this.firestore.collection("profile").doc(userDetails.bankProfileID).update(obj)
+            if (updateRes.writeTime){
+                return response.Success(updateRes.writeTime)
+            } else{
+                console.log(updateRes)
+                return response.Failure("error in updating profile data")
+            }
+        } else {
+            this.firestore.collection("profile").add(obj).then(async (ref)=>{
+                console.log("Document written with ID: ", ref.id);
+                let resp = await this.firestore.collection("users").doc(userDetails.ID).update({bankProfileID:ref.id})
+                return response.Success(resp.writeTime)
+            }).catch(e=>{
+                console.log("error in saving doc", e)
+                return response.Failure(e)
+            })
+        } 
     }
 
     async saveSummaryData(obj, consent_handle) {
-        return await this.firestore.collection("summary").add(obj).then(async (ref)=>{
-            console.log("Document written with ID: ", ref.id);
-            let uid = await this.firestore.collection("consentHandleMap").doc(consent_handle).get()
-            let result = await this.firestore.collection("users").doc(uid.ID).update({summaryID:ref.id})
-            return response.Success(result.writeTime)
-        }).catch(e=>{
-            console.log("error in saving doc", e)
-            return response.Failure(e)
-        })
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        if (userDetails.summaryID !== -1){
+            let updateRes = await this.firestore.collection("summary").doc(userDetails.summaryID).update(obj)
+            if (updateRes.writeTime){
+                return response.Success(updateRes.writeTime)
+            } else{
+                console.log(updateRes)
+                return response.Failure("error in updating summary data")
+            }
+        } else {
+            this.firestore.collection("summary").add(obj).then(async (ref)=>{
+                console.log("Document written with ID: ", ref.id);
+                let resp = await this.firestore.collection("users").doc(userDetails.ID).update({summaryID:ref.id})
+                return response.Success(resp.writeTime)
+            }).catch(e=>{
+                console.log("error in saving doc", e)
+                return response.Failure(e)
+            })
+        } 
     }
 
     async saveTransactionData(obj, consent_handle) {
-        return await this.firestore.collection("transactions").add(obj).then(async (ref)=>{
-            console.log("Document written with ID: ", ref.id);
-            let uid = await this.firestore.collection("consentHandleMap").doc(consent_handle).get()
-            let result = await this.firestore.collection("users").doc(uid.ID).update({transactionsID:ref.id})
-            return response.Success(result.writeTime)
-        }).catch(e=>{
-            console.log("error in saving doc", e)
-            return response.Failure(e)
-        })
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        if (userDetails.transactionsID !== -1){
+            let updateRes = await this.firestore.collection("transactions").doc(userDetails.transactionsID).update(obj)
+            if (updateRes.writeTime){
+                return response.Success(updateRes.writeTime)
+            } else{
+                console.log(updateRes)
+                return response.Failure("error in updating transactions data")
+            }
+        } else {
+            this.firestore.collection("transactions").add(obj).then(async (ref)=>{
+                console.log("Document written with ID: ", ref.id);
+                let resp = await this.firestore.collection("users").doc(userDetails.ID).update({transactionsID:ref.id})
+                return response.Success(resp.writeTime)
+            }).catch(e=>{
+                console.log("error in saving doc", e)
+                return response.Failure(e)
+            })
+        } 
+    }
+
+    async FetchTrasactionsForUser(uid) {
+        let userDetails = await (await this.firestore.collection("users").doc(uid).get()).data()
+        return (await this.firestore.collection("transactions").doc(userDetails["transactionsID"]).get()).data()
     }
 
     async updateConsentHandleForUser(ID, consentHandle) {

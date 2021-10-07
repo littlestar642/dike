@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/consent/:mobileNumber", usersController.Consent);
 router.get("/get-data", usersController.GetData)
 router.post("/signup", signupController)
+router.get("/transactions", usersController.GetUserTransactions);
 
 
 module.exports = router

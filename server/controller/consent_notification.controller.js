@@ -6,6 +6,7 @@ const cfg = require("../util/config")
 const signature = require("../util/request_signing");
 const requestData = require("../util/request_data");
 const decrypt_data = require("../util/decrypt_data");
+const fbs = require("../util/firestore")
 
 const ConsentNotification = (req, res) => {
     var body = req.body;
@@ -18,6 +19,10 @@ const ConsentNotification = (req, res) => {
         let consent_id = body.ConsentStatusNotification.consentId;
         let consent_status = body.ConsentStatusNotification.consentStatus;
         let consent_handle = body.ConsentStatusNotification.consentHandle;
+        fbs.GetInstance().updateDataConsentStatus(consent_handle, consent_status).catch(e=>{
+            console.log(e)
+        })
+
 
         if (consent_status === "ACTIVE") {
             fetchSignedConsent(consent_id, consent_handle);
