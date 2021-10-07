@@ -8,6 +8,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get("/", defaultController.Ping);
+router.get("/redirect", defaultController.Redirect)
 router.post("/Consent/Notification", consentNotificationController);
 router.post("/FI/Notification", fiNotificationController);
 
