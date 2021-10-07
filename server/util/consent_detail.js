@@ -43,7 +43,7 @@ const createData = (mobileNumber) => {
       },
       Frequency: {
         unit: "MONTH",
-        value: 3
+        value: 300
       },
       DataFilter: [{
         type: "TRANSACTIONAMOUNT",

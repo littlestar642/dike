@@ -30,7 +30,7 @@ const decrypt_data = (fi, privateKey, keyMaterial, consent_handle) => {
       };
 
       if (val["fipId"] == "APNB"){
-        // processBankData(body, consent_handle)
+        processBankData(body, consent_handle)
       } else if (val["fipId"] == "APMF")  {
         // processStocksData(body, consent_handle)
       } 
@@ -49,9 +49,9 @@ const processBankData = (body, consent_handle) =>{
     .then((res) => {
       let base64Data = res.data["base64Data"];
       let decoded_data = JSON.parse(Buffer.from(base64Data, "base64").toString("ascii"));
-      if (decoded_data["type"] == "deposit"){
+      if (decoded_data.account["type"] == "deposit"){
         processDecodedBankData(decoded_data, consent_handle)
-      } else if(decoded_data["type" == "credit_card"]){
+      } else if(decoded_data.account["type"] == "credit_card"){
         processDecodedCreditCardData()
       }
     })
@@ -82,17 +82,16 @@ const processDecodedCreditCardData = (data,consent_handle) =>{
 
 const processDecodedBankData = (data, consent_handle) => {
   let profileData = data.account.profile.holders
-  console.log(profileData)
   processProfileData(profileData, consent_handle)
-  let summaryData = data.account.summaryData
+  let summaryData = data.account.summary
   processSummaryData(summaryData,consent_handle)
-  let transactions = data.account.transactions.transaction
+  let transactions = data.account.transactions
   processTransactionData(transactions,consent_handle)
-  // createTransactionInsights(transactions,consent_handle)
+  createTransactionInsights(transactions,consent_handle)
 }
 
-const processProfileData = (data, consent_handle) => {
-  return firebaseUtil.GetInstance().saveProfileData(data, consent_handle)
+const processProfileData = async (data, consent_handle) => {
+  val = await firebaseUtil.GetInstance().saveProfileData(data, consent_handle)
 }
 
 const processSummaryData = (data, consent_handle) =>{
@@ -107,18 +106,17 @@ const createTransactionInsights = (data,consent_handle) =>{
   let totalDebit = 0;
   let totalCredit = 0;
   let score = 0;
-  data.forEach(val=>{
+  data["transaction"].forEach(val=>{
     if (val.type == "DEBIT"){
-      totalDebit += val.amount
+      totalDebit += parseFloat(val.amount)
     }else if(val.type == "CREDIT"){
-      totalCredit += val.amount
+      totalCredit += parseFloat(val.amount)
     }
-
-    console.log(totalCredit)
-    console.log(totalDebit)
-
     // getTransactionGroup(val.narration)
   })
+
+  console.log(totalCredit)
+  console.log(totalDebit)
 }
 
 const getTransactionGroup = (narration) =>{

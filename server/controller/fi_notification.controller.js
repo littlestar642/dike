@@ -12,6 +12,7 @@ const FINotifcation = (req, res) => {
   if (signature.validateDetachedJWS(headers["x-jws-signature"], body, pem)) {
     // Do something with body
     // Ideally you wait for this notification and then proceed with Data fetch request.
+
     const dateNow = new Date();
     res.send({
       ver: "1.0",
