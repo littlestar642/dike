@@ -27,7 +27,7 @@ const Consent = (req, res) => {
                 config.app_url +
                 "/" +
                 consentHandle +
-                `?redirect_url=${config.redirect_url}/redirectS`;
+                `?redirect_url=${config.redirect_url}/redirect`;
             let resp = await req.firestore.updateConsentHandleForUser(req.user.uid, consentHandle)
             if (resp.success) {
                 res.status(200).send(rsp.Success(url));
