@@ -1,12 +1,18 @@
 class Common {
-    static async makePostRequest (url: string, body: object, headers: HeadersInit): Promise<string> {
-        let content = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify(body)
-        });
-        if (content !== null) {
-            return await content.text();
+    static async makeApiRequest (method: 'POST' | 'GET', url: string, headers: HeadersInit, body: object = {}): Promise<string> {
+        try {
+            let content: any = {
+                method: method,
+                headers: headers
+            };
+
+            if (method === 'POST') content.body = JSON.stringify(body);
+            let data = await fetch(url, content);
+            if (data !== null) {
+                return await data.text();
+            }
+        } catch (err: any) {
+            console.log(err.message);
         }
         return '';
     }
