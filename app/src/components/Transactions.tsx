@@ -16,13 +16,13 @@ const transactionData = [
   { key: 4, date: "", bankName: "", amount: "", paymentMethod: "" },
 ];
 
-const Transactions = () => {
+const Transactions = ({}) => {
   return (
     <View style={styles.container}>
       <FlatList
         data={transactionData}
         renderItem={({ item }) => (
-          <TouchableOpacity key={item.key}>
+          <TouchableOpacity>
             <LinearGradient
               colors={["#29b4d6", "#6dd5ed"]}
               start={{ x: 0, y: 0.5 }}
