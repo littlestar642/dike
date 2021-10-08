@@ -112,10 +112,6 @@ class LoginScreen extends React.Component<Props, States> {
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <LinearGradient
-                    colors={["#ABE9FF", "#D8F5FF"]}
-                    style={styles.background}
-                />
                 <View style={styles.centerVerticleContainer}>
                     <Text style={styles.title}>
                         Dike
@@ -164,7 +160,8 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 42,
         fontWeight: "bold",
-        color:"#8CBBF1"
+        color:"#5AD1FC",
+        marginTop:"50"
     },
     link: {
         fontSize: 18,
