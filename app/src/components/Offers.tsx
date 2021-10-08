@@ -36,7 +36,6 @@ export default class App extends Component {
           right: 30,
         }}
       >
-        <TouchableOpacity></TouchableOpacity>
         <TouchableOpacity>
           <LinearGradient
             colors={["#2193b0", "#6dd5ed"]}
