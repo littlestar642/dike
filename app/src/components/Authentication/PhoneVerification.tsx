@@ -27,7 +27,7 @@ class PhoneVerification extends React.Component<Props, States> {
     private auth: Authentication;
     private recaptchaVerifier: React.RefObject<FirebaseRecaptchaVerifierModal>;
 
-    constructor (props: Props) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             mobileNumber: this.props.default || '',
@@ -41,7 +41,7 @@ class PhoneVerification extends React.Component<Props, States> {
         this.recaptchaVerifier = React.createRef();
     }
 
-    updateMobileNumber (mobile: string) {
+    updateMobileNumber(mobile: string) {
         if (!(this.props.disableEdit || false)) {
             this.setState(state => {
                 return {
@@ -57,7 +57,7 @@ class PhoneVerification extends React.Component<Props, States> {
         }
     }
 
-    updateOtp (otp: string) {
+    updateOtp(otp: string) {
         this.setState(state => {
             return {
                 ...state,
@@ -67,15 +67,21 @@ class PhoneVerification extends React.Component<Props, States> {
         });
     }
 
-    shouldComponentUpdate (_: Props, nextState: States): boolean {
+    shouldComponentUpdate(_: Props, nextState: States): boolean {
         if (this.props.updateSentState !== null && this.props.updateSentState !== undefined) this.props.updateSentState(nextState.verifyRequestSent);
         return true;
     }
 
-    async sendPhoneVerifyRequest () {
+    async sendPhoneVerifyRequest() {
         if (Common.regex.phone.test(this.state.mobileNumber)) {
             try {
                 if (this.recaptchaVerifier.current !== null) {
+                    this.setState(state => {
+                        return {
+                            ...state,
+                            loadingState: true
+                        }
+                    })                    
                     let callback = await this.auth.beginPhoneVerification('+91' + this.state.mobileNumber, this.recaptchaVerifier.current);
                     if (callback !== null) {
                         this.setState(state => {
@@ -87,6 +93,12 @@ class PhoneVerification extends React.Component<Props, States> {
                         });
                         return true;
                     }
+                    this.setState(state => {
+                        return {
+                            ...state,
+                            loadingState: true
+                        }
+                    })
                 } else {
                     throw Error('Recaptcha Verifier not initialized');
                 }
@@ -112,7 +124,7 @@ class PhoneVerification extends React.Component<Props, States> {
         return false;
     }
 
-    async verifyOtp () {
+    async verifyOtp() {
         if (Common.regex.otp.test(this.state.otp)) {
             try {
                 if (this.state.confirmationCallback !== null) {
@@ -151,7 +163,7 @@ class PhoneVerification extends React.Component<Props, States> {
         return false;
     }
 
-    render () {
+    render() {
         return (
             <View>
                 <View>
@@ -166,16 +178,16 @@ class PhoneVerification extends React.Component<Props, States> {
                         autoCapitalize="none"
                     />
                     {
-                        this.state.verifyRequestSent && !(this.props.disableEdit || false) &&        
+                        this.state.verifyRequestSent && !(this.props.disableEdit || false) &&
                         <TextInput
-                        label="OTP"
-                        placeholder="6 digit OTP"
-                        maxLength={6}
-                        value={this.state.otp}
-                        onChangeText={(text: string) => this.updateOtp(text)}
-                        errorText={this.state.otpError}
-                        keyboardType="numeric"
-                        autoCapitalize="none"
+                            label="OTP"
+                            placeholder="6 digit OTP"
+                            maxLength={6}
+                            value={this.state.otp}
+                            onChangeText={(text: string) => this.updateOtp(text)}
+                            errorText={this.state.otpError}
+                            keyboardType="numeric"
+                            autoCapitalize="none"
                         />
                     }
                 </View>

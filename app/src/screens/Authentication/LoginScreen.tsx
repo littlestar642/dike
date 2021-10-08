@@ -21,6 +21,7 @@ type Props = {
 
 type States = {
     verifyRequestSent: boolean;
+    loadingState: boolean;
 };
 
 class LoginScreen extends React.Component<Props, States> {
@@ -28,10 +29,11 @@ class LoginScreen extends React.Component<Props, States> {
     private navigation: StackNavigationProp<AuthStackParams>;
     private auth: Authentication;
 
-    constructor (props: Props) {
+    constructor(props: Props) {
         super(props);
         this.state = {
-            verifyRequestSent: false
+            verifyRequestSent: false,
+            loadingState: false,
         };
         this.navigation = props.navigation;
         this.phoneVerifier = React.createRef();
@@ -41,20 +43,32 @@ class LoginScreen extends React.Component<Props, States> {
             this.auth.signOut();
         })
     }
-    
+
     componentDidMount() {
-        this.auth.userRegisterStateUpdateCallback = ((authState) => {this.updateAuthState(authState)});
+        this.auth.userRegisterStateUpdateCallback = ((authState) => { this.updateAuthState(authState) });
     }
 
     componentWillUnmount() {
         this.auth.releaseInstance();
     }
 
-    async sendPhoneVerifyRequest () {
+    async sendPhoneVerifyRequest() {
+        this.setState(state => {
+            return {
+                ...state,
+                loadingState: true
+            }
+        })
         await this.phoneVerifier.current?.sendPhoneVerifyRequest();
+        this.setState(state => {
+            return {
+                ...state,
+                loadingState: false
+            }
+        })
     }
 
-    updateVerificationSentState (verificationSentState: boolean) {
+    updateVerificationSentState(verificationSentState: boolean) {
         if (this.state.verifyRequestSent !== verificationSentState) {
             this.setState(state => {
                 return {
@@ -71,11 +85,23 @@ class LoginScreen extends React.Component<Props, States> {
         }
     }
 
-    async verifyOtp () {
+    async verifyOtp() {
+        this.setState(state => {
+            return {
+                ...state,
+                loadingState: true
+            }
+        })
         await this.phoneVerifier.current?.verifyOtp();
+        this.setState(state => {
+            return {
+                ...state,
+                loadingState: false
+            }
+        })
     }
 
-    openSignUpPage () {
+    openSignUpPage() {
         try {
             this.navigation.navigate('Signup');
         } catch (err: any) {
@@ -83,38 +109,37 @@ class LoginScreen extends React.Component<Props, States> {
         }
     }
 
-    render () {
+    render() {
         return (
             <SafeAreaView style={styles.container}>
-                {/* <LinearGradient
-                    colors={["#2193b0", "#6dd5ed"]}
-                    start={{ x: 0, y: 0.5 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.cards}
-                ></LinearGradient> */}
+                <LinearGradient
+                    colors={["#ABE9FF", "#D8F5FF"]}
+                    style={styles.background}
+                />
                 <View style={styles.centerVerticleContainer}>
                     <Text style={styles.title}>
                         Dike
                     </Text>
                 </View>
-                <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
+                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
                     <PhoneVerification
                         ref={this.phoneVerifier}
-                        updateSentState={(state: boolean) => {this.updateVerificationSentState(state);}}
+                        updateSentState={(state: boolean) => { this.updateVerificationSentState(state); }}
                     />
                     {
                         this.state.verifyRequestSent ? (
-                            <Button onPress={() => this.verifyOtp()}>Verify Otp</Button>
+                            <Button onPress={() => this.verifyOtp()} isLoading={this.state.loadingState}>Verify Otp</Button>
                         ) : (
-                            <Button onPress={() => this.sendPhoneVerifyRequest()}>Login</Button>
+                            <Button onPress={() => this.sendPhoneVerifyRequest()} isLoading={this.state.loadingState}>Login
+                            </Button>
                         )
                     }
                     <View style={styles.centerVerticleContainer}>
-                    <TouchableWithoutFeedback onPress={() => {this.openSignUpPage()}}>
-                        <Text style={styles.link}>
-                            Not registered yet! SignUp
-                        </Text>
-                    </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback onPress={() => { this.openSignUpPage() }}>
+                            <Text style={styles.link}>
+                                Not registered yet! Sign Up
+                            </Text>
+                        </TouchableWithoutFeedback>
                     </View>
                 </View>
             </SafeAreaView>
@@ -125,22 +150,33 @@ class LoginScreen extends React.Component<Props, States> {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    padding: 10,
-  },
-  centerVerticleContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "bold",
-  },
-  link: {
-    fontSize: 14,
-    textDecorationLine: "underline",
-    color: "#2193b0",
-  },
+    container: {
+        flex: 1,
+        backgroundColor: colors.white,
+        padding: 10,
+    },
+    centerVerticleContainer: {
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent:"center",
+        marginTop:20,
+    },
+    title: {
+        fontSize: 42,
+        fontWeight: "bold",
+        color:"#8CBBF1"
+    },
+    link: {
+        fontSize: 18,
+        textDecorationLine: "underline",
+        color: "#2193b0",
+        marginTop: 5,
+    },
+    background: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom:0
+    }
 });

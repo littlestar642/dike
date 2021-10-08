@@ -1,4 +1,5 @@
 import React from 'react';
+import { ActivityIndicator } from "react-native";
 import {
   TouchableOpacity,
   Text,
@@ -18,6 +19,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.primary,
     marginVertical: 7,
+    flexDirection:'row',
+    justifyContent:'center'
   },
   containerOutline: {
     backgroundColor: 'transparent',
@@ -29,6 +32,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     fontSize: 18,
     fontWeight: '500',
+    margin:5
   },
   textOutline: {
     color: colors.primary,
@@ -39,12 +43,14 @@ type ButtonProps = {
   onPress: () => void;
   children: string;
   type?: 'outline';
+  isLoading?: boolean;
 };
 
 export const Button = ({
-  onPress = () => {},
+  onPress = () => { },
   children = '',
   type,
+  isLoading = false,
 }: ButtonProps) => {
   const containerStyles: StyleProp<ViewStyle>[] = [styles.container];
   const textStyles: StyleProp<TextStyle>[] = [styles.text];
@@ -57,6 +63,7 @@ export const Button = ({
   return (
     <TouchableOpacity onPress={onPress} style={containerStyles}>
       <Text style={textStyles}>{children}</Text>
+      {isLoading && <ActivityIndicator size="small" color="#ffffff" />}
     </TouchableOpacity>
   );
 };

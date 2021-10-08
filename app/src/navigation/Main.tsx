@@ -59,7 +59,7 @@ class Main extends Component<any, States> {
     try {
       this.setState((state) => {
         return {
-          isAuthComplete: true, // authState === AuthState.REGISTERED,
+        isAuthComplete: authState === AuthState.REGISTERED,
         };
       });
     } catch (err) {
@@ -70,46 +70,37 @@ class Main extends Component<any, States> {
   render() {
     return this.state.isAuthComplete ? (
       <MainStack.Navigator>
-        {
-          /* {this.state.isAuthComplete }*/ true ? (
-            <>
-              <MainStack.Screen
-                name="Investment"
-                component={InvestmentScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Profile"
-                component={UserProfileScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Bank"
-                component={BankDetailsScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{ headerShown: false }}
-              />
-            </>
-          ) : (
-            <>
-              <MainStack.Screen
-                name="Login"
-                options={{ headerShown: false }}
-                component={LoginScreen}
-              />
-              <MainStack.Screen name="Signup" component={SignupScreen} />
-            </>
-          )
-        }
+        <MainStack.Screen
+          name="Profile"
+          component={UserProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="MutualFund"
+          component={MutualFundsScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Investment"
+          component={InvestmentScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Transactions"
+          component={TransactionScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen name="Settings" component={SettingsScreen} />
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Bank"
+          component={BankDetailsScreen}
+          options={{ headerShown: false }}
+        />
       </MainStack.Navigator>
     ) : (
       <AuthStack.Navigator>
