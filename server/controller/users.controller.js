@@ -3,7 +3,7 @@ const cfg = require("../util/config")
 const signature = require("../util/request_signing");
 const axios = require("axios");
 const config = require("../config");
-const response = require("../util/response")
+const rsp = require("../util/response")
 
 const Consent = (req, res) => {
     let body = createData(req.params.mobileNumber);
@@ -29,22 +29,21 @@ const Consent = (req, res) => {
                 consentHandle +
                 `?redirect_url=${config.redirect_url}/redirectS`;
             let resp = await req.firestore.updateConsentHandleForUser(req.user.uid, consentHandle)
-            if (resp.success){
-                res.status(200).send(response.Success(url));
-            }else{
+            if (resp.success) {
+                res.status(200).send(rsp.Success(url));
+            } else {
                 console.log(resp)
                 res.status(500).send(resp)
             }
-            
+
         })
         .catch(function (error) {
             console.log(error);
-           res.send(response.Failure("error in getting consent"))
-
+            res.send(response.Failure("error in getting consent"))
         });
 }
 
-const GetUserTransactions = async (req,res) =>{
+const GetUserTransactions = async (req, res) => {
     let val = await req.firestore.FetchTrasactionsForUser(req.user["uid"])
     res.send(response.Success(val["transaction"]))
 }
