@@ -70,29 +70,14 @@ class SignupScreen extends React.Component<Props, States> {
                 }
             })
         } else {
-            this.setState(state => {
-                return {
-                    ...state,
-                    loadingState: true
-                }
-            })
+            this.updateLoadingState(true)
             await this.auth.registerUser(this.state.username, this.phoneVerifier.current?.state.mobileNumber || '');
-            this.setState(state => {
-                return {
-                    ...state,
-                    loadingState: false
-                }
-            })
+            this.updateLoadingState(false)
         }
     }
 
     async verifyOtp() {
-        this.setState(state => {
-            return {
-                ...state,
-                loadingState: true
-            }
-        })
+        this.updateLoadingState(true)
         let signInState = await this.phoneVerifier.current?.verifyOtp();
         this.setState(state => {
             return {
@@ -111,6 +96,21 @@ class SignupScreen extends React.Component<Props, States> {
                 usernameError: ''
             };
         });
+    }
+
+    async requestOTP() {
+        this.updateLoadingState(true)
+        await this.phoneVerifier.current?.sendPhoneVerifyRequest()
+        this.updateLoadingState(false)
+    }
+
+    updateLoadingState(st: boolean) {
+        this.setState(state => {
+            return {
+                ...state,
+                isLoading: st
+            }
+        })
     }
 
     render() {
@@ -135,7 +135,7 @@ class SignupScreen extends React.Component<Props, States> {
                 />
                 {
                     !this.state.isSignedIn && !this.state.isVerificationSent &&
-                    <Button onPress={() => this.phoneVerifier.current?.sendPhoneVerifyRequest()} isLoading={this.state.isLoading}>Request OTP</Button>
+                    <Button onPress={() => this.requestOTP()} isLoading={this.state.isLoading}>Request OTP</Button>
                 }
                 {
                     !this.state.isSignedIn && this.state.isVerificationSent &&
