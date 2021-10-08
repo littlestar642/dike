@@ -13,6 +13,7 @@ import UserProfileScreen from "../screens/UserProfileScreen";
 import BankDetailsScreen from "../screens/BankDetalisScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import InvestmentScreen from "../screens/InvestmentScreen";
+import TransactionScreen from "../screens/TransactionScreen";
 
 export type AuthStackParams = {
   Login: LoginProps;
@@ -22,6 +23,7 @@ export type AuthStackParams = {
   Bank: undefined;
   Settings: undefined;
   Investment: undefined;
+  Transactions: undefined;
 };
 
 const MainStack = createStackNavigator<AuthStackParams>();
@@ -70,8 +72,18 @@ class Main extends Component<any, States> {
                 options={{ headerShown: false }}
               />
               <MainStack.Screen
+                name="Transactions"
+                component={TransactionScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
                 name="Profile"
                 component={UserProfileScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Settings"
+                component={SettingsScreen}
                 options={{ headerShown: false }}
               />
               <MainStack.Screen
@@ -80,13 +92,13 @@ class Main extends Component<any, States> {
                 options={{ headerShown: false }}
               />
               <MainStack.Screen
-                name="Bank"
-                component={BankDetailsScreen}
+                name="Profile"
+                component={UserProfileScreen}
                 options={{ headerShown: false }}
               />
               <MainStack.Screen
-                name="Settings"
-                component={SettingsScreen}
+                name="Bank"
+                component={BankDetailsScreen}
                 options={{ headerShown: false }}
               />
             </>
