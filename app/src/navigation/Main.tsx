@@ -16,6 +16,7 @@ import InvestmentScreen from "../screens/InvestmentScreen";
 import TransactionScreen from "../screens/TransactionScreen";
 import MutualFundsScreen from "../screens/MutualFundsScreen";
 
+
 export type AuthStackParams = {
   Login: LoginProps;
   Signup: SignupProps;
@@ -29,6 +30,7 @@ export type MainStackParams = {
   Investment: undefined;
   Transactions: undefined;
   MutualFund: undefined;
+
 };
 
 const AuthStack = createStackNavigator<AuthStackParams>();
@@ -39,33 +41,33 @@ type States = {
 };
 
 class Main extends Component<any, States> {
-  private auth: Authentication;
+    private auth: Authentication;
 
-  constructor(props: any) {
-    super(props);
-    this.auth = new Authentication();
-    this.state = {
-      isAuthComplete: false,
-    };
-  }
+    constructor(props: any) {
+      super(props);
+      this.auth = new Authentication();
+      this.state = {
+        isAuthComplete: false,
+      };
+    }
 
-  componentDidMount() {
-    this.auth.userRegisterStateUpdateCallback = (authState: number) => {
-      this.listenAuthState(authState);
-    };
-  }
+    componentDidMount() {
+      this.auth.userRegisterStateUpdateCallback = (authState: number) => {
+        this.listenAuthState(authState);
+      };
+    }
 
-  listenAuthState(authState: number) {
-    try {
+    listenAuthState(authState: number) {
+      try {
       this.setState((state) => {
         return {
-          isAuthComplete: true, // authState === AuthState.REGISTERED,
+        isAuthComplete: true// authState === AuthState.REGISTERED,
         };
       });
-    } catch (err) {
+      } catch (err) {
       console.log("Main.tsx: ", err);
+      }
     }
-  }
 
   render() {
     return this.state.isAuthComplete ? (
@@ -110,6 +112,7 @@ class Main extends Component<any, States> {
           component={LoginScreen}
         />
         <AuthStack.Screen name="Signup" component={SignupScreen} />
+
       </AuthStack.Navigator>
     );
   }

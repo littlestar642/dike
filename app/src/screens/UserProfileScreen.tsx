@@ -9,7 +9,8 @@ type Props = {
 };
 
 export default class UserProfileScreen extends Component<Props> {
-  constructor(props: Props) {
+  constructor (props: Props) {
+
     super(props);
   }
 
@@ -55,12 +56,8 @@ export default class UserProfileScreen extends Component<Props> {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => {
-              this.props.navigation.navigate("Settings");
-            }}
-          >
+          <TouchableOpacity style={styles.item} onPress={() => {this.props.navigation.navigate('Settings');}}>
+
             <View style={styles.iconContent}>
               <Image
                 style={styles.icon}
