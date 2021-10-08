@@ -7,7 +7,7 @@ export default class Chart extends Component {
   render() {
     const widthAndHeight = 300;
     const series = [500, 400]; //1st : credit, 2nd : debit
-    const sliceColor = ["#57f557", "#f33939"];
+    const sliceColor = ["##387df2", "#38e8f2"];
 
     return (
       <SafeAreaView style={styles.container}>
