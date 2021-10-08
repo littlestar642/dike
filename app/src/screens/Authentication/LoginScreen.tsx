@@ -46,6 +46,10 @@ class LoginScreen extends React.Component<Props, States> {
         this.auth.userRegisterStateUpdateCallback = ((authState) => {this.updateAuthState(authState)});
     }
 
+    componentWillUnmount() {
+        this.auth.releaseInstance();
+    }
+
     async sendPhoneVerifyRequest () {
         await this.phoneVerifier.current?.sendPhoneVerifyRequest();
     }

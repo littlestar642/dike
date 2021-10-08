@@ -10,25 +10,31 @@ export const AuthState = Object.freeze({
 });
 
 class Authentication {
-    private _isUserRegistered: boolean;
+    private _isUserRegistered: boolean | undefined;
     private _unsubscribeDocListener: { (): void; (): void; } | null | undefined;
     private _userRegisterStateUpdateCallback: ((state: number) => void) | undefined | null;
+    private authListenerId: number;
 
     public set userRegisterStateUpdateCallback(value: ((state: number) => void) | undefined | null) {
         this._userRegisterStateUpdateCallback = value;
+        this.changeAuthState(Firebase.getInstance().getAuth().currentUser);
     }
     
     public get isSignedIn(): boolean {
         return Firebase.getInstance().getAuth().currentUser !== null;
     }
     public get isUserRegistered(): boolean {
-        return this._isUserRegistered;
+        return this._isUserRegistered || false;
     }
 
     constructor(callback?: ((state: number) => void) | null | undefined) {
-        this._isUserRegistered = false;
         this._userRegisterStateUpdateCallback = callback;
-        Firebase.getInstance().addAuthChangeListener((user) => {this.changeAuthState(user)});
+        this.authListenerId = Firebase.getInstance().addAuthChangeListener((user) => {this.changeAuthState(user)});
+    }
+
+    public releaseInstance() {
+        Firebase.getInstance().removeAuthChangeListener(this.authListenerId);
+        this._userRegisterStateUpdateCallback = null;
     }
 
     private async changeAuthState (user: firebase.User | null) {

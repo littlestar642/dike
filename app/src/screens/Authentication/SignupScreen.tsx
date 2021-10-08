@@ -44,6 +44,10 @@ class SignupScreen extends React.Component<Props, States> {
         };
     }
 
+    componentWillUnmount() {
+        this.auth.releaseInstance();
+    }
+
     updateVerificationSentState (verificationState: boolean) {
         if (this.state.isVerificationSent !== verificationState) {
             this.setState(state => {
