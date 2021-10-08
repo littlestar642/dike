@@ -13,6 +13,7 @@ import UserProfileScreen from "../screens/UserProfileScreen";
 import BankDetailsScreen from "../screens/BankDetalisScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import InvestmentScreen from "../screens/InvestmentScreen";
+import MutualFundsScreen from "../screens/MutualFundsScreen";
 
 export type AuthStackParams = {
   Login: LoginProps;
@@ -22,6 +23,7 @@ export type AuthStackParams = {
   Bank: undefined;
   Settings: undefined;
   Investment: undefined;
+  MutualFund: undefined;
 };
 
 const MainStack = createStackNavigator<AuthStackParams>();
@@ -64,6 +66,10 @@ class Main extends Component<any, States> {
         {
           /* {this.state.isAuthComplete }*/ true ? (
             <>
+              <MainStack.Screen
+                name="MutualFund"
+                component={MutualFundsScreen}
+              />
               <MainStack.Screen
                 name="Investment"
                 component={InvestmentScreen}
