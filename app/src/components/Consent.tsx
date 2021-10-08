@@ -48,7 +48,7 @@ class Consent extends React.Component<ConsentProps, ConsentState> {
 
     render () {
         return (
-            <View>
+            <View style={{flex: 1}}>
                 {this.state.consentUrl === "" ? (
                     <CircularLoader />
                 ) : (
