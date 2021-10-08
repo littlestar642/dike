@@ -1,8 +1,18 @@
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { MainStackParams } from "../navigation/Main";
 
-export default class UserProfileScreen extends Component {
+type Props = {
+  navigation: StackNavigationProp<MainStackParams>;
+};
+
+export default class UserProfileScreen extends Component<Props> {
+  constructor (props: Props) {
+    super(props);
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -40,7 +50,7 @@ export default class UserProfileScreen extends Component {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.item}>
+          <TouchableOpacity style={styles.item} onPress={() => {this.props.navigation.navigate('Settings');}}>
             <View style={styles.iconContent}>
               <Image
                 style={styles.icon}
