@@ -61,7 +61,7 @@ class Main extends Component<any, States> {
       try {
       this.setState((state) => {
         return {
-        isAuthComplete: true// authState === AuthState.REGISTERED,
+        isAuthComplete: authState === AuthState.REGISTERED,
         };
       });
       } catch (err) {

@@ -150,7 +150,7 @@ class FirestoreUtils {
         let user = new User(ID, username, phoneNumber,"", -1, -1, -1, -1, -1, -1, -1)
         try {
             let userRef = await this.firestore.collection("users").doc(ID).create(user)
-            return response.Success(userRef)
+            return response.Success(userRef.writeTime)
         } catch (e) {
             console.log("error in creating user", e)
             return response.Failure(e)
