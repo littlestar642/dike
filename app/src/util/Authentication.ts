@@ -11,7 +11,7 @@ export const AuthState = Object.freeze({
 
 class Authentication {
     private _isUserRegistered: boolean | undefined;
-    private _unsubscribeDocListener: { (): void; (): void; } | null | undefined;
+    private _unsubscribeDocListener: { (): void; } | null | undefined;
     private _userRegisterStateUpdateCallback: ((state: number) => void) | undefined | null;
     private authListenerId: number;
 
@@ -110,15 +110,37 @@ class Authentication {
         headers.set('Content-Type', 'application/json');
         // console.log(`Token: ${token}`, `Uid: ${uid}`);
 
-        let result = await Common.makePostRequest(URLs.createUser,
+        let result = await Common.makeApiRequest('POST', URLs.createUser,
+            headers,
             {
                 username: name,
                 phoneNumber: phoneNumber
-            },
-            headers
+            }
         );
-        // return JSON.parse(result).result; // TODO: Implement after api return change
-        return result === 'user created successfully';
+        return JSON.parse(result).success; // TODO: Implement after api return change
+        // return result === 'user created successfully';
+    }
+
+    async getConsent (): Promise<string> {
+        let user = Firebase.getInstance().getAuth().currentUser;
+        if (user === null) return "";
+        
+        let headers = new Headers();
+        let token = await user.getIdToken();
+        headers.set('X_FIREBASE_TOKEN', token);
+        let uid = user.uid;
+        headers.set('X_USER_ID', uid);
+        headers.set('Content-Type', 'application/json');
+        // console.log(`Token: ${token}`, `Uid: ${uid}`);
+
+        let phoneNumber = user.phoneNumber?.substr(3, 10);
+        let response = await Common.makeApiRequest('GET', URLs.getConsent + phoneNumber, headers);
+        let result = JSON.parse(response);
+        if (result.success)
+        {
+            return result.msg;
+        }
+        return '';
     }
 }
 
