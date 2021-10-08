@@ -133,7 +133,7 @@ class LoginScreen extends React.Component<Props, States> {
                     <View style={styles.centerVerticleContainer}>
                         <TouchableWithoutFeedback onPress={() => { this.openSignUpPage() }}>
                             <Text style={styles.link}>
-                                Not registered yet! Sign Up
+                                Not Registered yet? Sign Up!
                             </Text>
                         </TouchableWithoutFeedback>
                     </View>
@@ -154,19 +154,19 @@ const styles = StyleSheet.create({
     centerVerticleContainer: {
         flexDirection: "column",
         alignItems: "center",
-        justifyContent:"center",
-        marginTop:20,
+        justifyContent: "center",
+        marginTop: 10,
     },
     title: {
-        fontSize: 42,
+        fontSize: 52,
         fontWeight: "bold",
-        color:"#5AD1FC",
-        marginTop:"50"
+        color: colors.primary,
+        marginTop:40
     },
     link: {
         fontSize: 18,
         textDecorationLine: "underline",
-        color: "#2193b0",
+        color: colors.gray,
         marginTop: 5,
     },
     background: {
@@ -174,6 +174,6 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         top: 0,
-        bottom:0
+        bottom: 0
     }
 });
