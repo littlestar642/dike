@@ -12,6 +12,8 @@ import Authentication, { AuthState } from "../util/Authentication";
 import UserProfileScreen from "../screens/UserProfileScreen";
 import BankDetailsScreen from "../screens/BankDetalisScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import InvestmentScreen from "../screens/InvestmentScreen";
+import TransactionScreen from "../screens/TransactionScreen";
 
 export type AuthStackParams = {
   Login: LoginProps;
@@ -23,7 +25,9 @@ export type MainStackParams = {
   Profile: undefined;
   Bank: undefined;
   Settings: undefined;
-}
+  Investment: undefined;
+  Transactions: undefined;
+};
 
 const AuthStack = createStackNavigator<AuthStackParams>();
 const MainStack = createStackNavigator<MainStackParams>();
@@ -61,31 +65,46 @@ class Main extends Component<any, States> {
         }
     }
 
-    render() {
-        return this.state.isAuthComplete ? (
-            <MainStack.Navigator initialRouteName="Home">
-                <MainStack.Screen
-                    name="Home"
-                    component={HomeScreen}
-                    options={{ headerShown: false }}
-                />
-                <MainStack.Screen
-                    name="Profile"
-                    component={UserProfileScreen}
-                    options={{ headerShown: false }}
-                />
-                <MainStack.Screen
-                    name="Bank"
-                    component={BankDetailsScreen}
-                    options={{ headerShown: false }}
-                />
-                <MainStack.Screen
-                    name="Settings"
-                    component={SettingsScreen}
-                    options={{ headerShown: false }}
-                />
-            </MainStack.Navigator>
-            ) : (
+  render() {
+    return this.state.isAuthComplete ? (
+      <MainStack.Navigator>
+              <MainStack.Screen
+                name="Investment"
+                component={InvestmentScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Transactions"
+                component={TransactionScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Profile"
+                component={UserProfileScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Profile"
+                component={UserProfileScreen}
+                options={{ headerShown: false }}
+              />
+              <MainStack.Screen
+                name="Bank"
+                component={BankDetailsScreen}
+                options={{ headerShown: false }}
+              />
+        </MainStack.Navigator>
+          ) : (
             <AuthStack.Navigator>
                 <AuthStack.Screen
                     name="Login"
