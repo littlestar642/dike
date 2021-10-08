@@ -73,13 +73,13 @@ class Main extends Component<any, States> {
     return this.state.isAuthComplete ? (
       <MainStack.Navigator>
         <MainStack.Screen
-          name="MutualFund"
-          component={MutualFundsScreen}
+          name="Profile"
+          component={UserProfileScreen}
           options={{ headerShown: false }}
         />
         <MainStack.Screen
-          name="Profile"
-          component={UserProfileScreen}
+          name="MutualFund"
+          component={MutualFundsScreen}
           options={{ headerShown: false }}
         />
         <MainStack.Screen

@@ -26,13 +26,14 @@ type States = {
     usernameError: string;
     isVerificationSent: boolean;
     isSignedIn: boolean;
+    isLoading: boolean;
 }
 
 class SignupScreen extends React.Component<Props, States> {
     private phoneVerifier: React.RefObject<PhoneVerification>;
     private auth: Authentication;
 
-    constructor (props: Props) {
+    constructor(props: Props) {
         super(props);
         this.auth = new Authentication();
         this.phoneVerifier = React.createRef();
@@ -40,7 +41,8 @@ class SignupScreen extends React.Component<Props, States> {
             username: '',
             usernameError: '',
             isSignedIn: this.auth.isSignedIn || false,
-            isVerificationSent: this.auth.isSignedIn || false
+            isVerificationSent: this.auth.isSignedIn || false,
+            isLoading: false
         };
     }
 
@@ -48,7 +50,7 @@ class SignupScreen extends React.Component<Props, States> {
         this.auth.releaseInstance();
     }
 
-    updateVerificationSentState (verificationState: boolean) {
+    updateVerificationSentState(verificationState: boolean) {
         if (this.state.isVerificationSent !== verificationState) {
             this.setState(state => {
                 return {
@@ -59,7 +61,7 @@ class SignupScreen extends React.Component<Props, States> {
         }
     }
 
-    async registerUser () {
+    async registerUser() {
         if (this.state.username.trim().length === 0) {
             this.setState(state => {
                 return {
@@ -68,21 +70,40 @@ class SignupScreen extends React.Component<Props, States> {
                 }
             })
         } else {
+            this.setState(state => {
+                return {
+                    ...state,
+                    loadingState: true
+                }
+            })
             await this.auth.registerUser(this.state.username, this.phoneVerifier.current?.state.mobileNumber || '');
+            this.setState(state => {
+                return {
+                    ...state,
+                    loadingState: false
+                }
+            })
         }
     }
 
-    async verifyOtp () {
+    async verifyOtp() {
+        this.setState(state => {
+            return {
+                ...state,
+                loadingState: true
+            }
+        })
         let signInState = await this.phoneVerifier.current?.verifyOtp();
         this.setState(state => {
             return {
                 ...state,
-                isSignedIn: signInState || false
+                isSignedIn: signInState || false,
+                isLoading: false
             };
         });
     }
 
-    updateName (name: string) {
+    updateName(name: string) {
         this.setState(state => {
             return {
                 ...state,
@@ -99,31 +120,31 @@ class SignupScreen extends React.Component<Props, States> {
         }
         return (
             <SafeAreaView style={styles.container}>
-                    <TextInput
-                        label='Name'
-                        value={this.state.username}
-                        placeholder='Full Name'
-                        onChangeText={(name) => {this.updateName(name)}}
-                        errorText={this.state.usernameError}
-                    />
-                    <PhoneVerification
-                        ref={this.phoneVerifier}
-                        default={defaultMobile}
-                        disableEdit={this.state.isSignedIn}
-                        updateSentState={(flag) => {this.updateVerificationSentState(flag)}}
-                    />
-                    { 
-                        !this.state.isSignedIn && !this.state.isVerificationSent && 
-                        <Button onPress={() => this.phoneVerifier.current?.sendPhoneVerifyRequest()}>Request OTP</Button>
-                    }
-                    {
-                        !this.state.isSignedIn && this.state.isVerificationSent &&
-                        <Button onPress={() => this.verifyOtp()}>Verify OTP</Button>
-                    }
-                    {
-                        this.state.isSignedIn && this.state.isVerificationSent &&
-                        <Button onPress={() => this.registerUser()}>Register</Button>
-                    }
+                <TextInput
+                    label='Name'
+                    value={this.state.username}
+                    placeholder='Full Name'
+                    onChangeText={(name) => { this.updateName(name) }}
+                    errorText={this.state.usernameError}
+                />
+                <PhoneVerification
+                    ref={this.phoneVerifier}
+                    default={defaultMobile}
+                    disableEdit={this.state.isSignedIn}
+                    updateSentState={(flag) => { this.updateVerificationSentState(flag) }}
+                />
+                {
+                    !this.state.isSignedIn && !this.state.isVerificationSent &&
+                    <Button onPress={() => this.phoneVerifier.current?.sendPhoneVerifyRequest()} isLoading={this.state.isLoading}>Request OTP</Button>
+                }
+                {
+                    !this.state.isSignedIn && this.state.isVerificationSent &&
+                    <Button onPress={() => this.verifyOtp()} isLoading={this.state.isLoading}>Verify OTP</Button>
+                }
+                {
+                    this.state.isSignedIn && this.state.isVerificationSent &&
+                    <Button onPress={() => this.registerUser()} isLoading={this.state.isLoading}>Register</Button>
+                }
             </SafeAreaView>
         )
     }

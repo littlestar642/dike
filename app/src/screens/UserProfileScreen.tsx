@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainStackParams } from "../navigation/Main";
+import Firebase from "../util/FirebaseUtils";
 
 type Props = {
   navigation: StackNavigationProp<MainStackParams>;
@@ -90,7 +91,7 @@ export default class UserProfileScreen extends Component<Props> {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.item}>
+          <TouchableOpacity style={styles.item} onPress={()=>{Firebase.getInstance().getAuth().signOut()}}>
             <View style={styles.iconContent}>
               <Image
                 style={styles.icon}
