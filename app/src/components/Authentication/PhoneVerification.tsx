@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import { default as FirebaseRecaptchaVerifierModal } from '../../util/RecaptchaVerifier';
 import config from '../../util/google-services.json';
 
 import { TextInput } from '../../components/Form';

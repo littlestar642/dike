@@ -1,5 +1,7 @@
 import React from "react";
-import { SafeAreaView, Text } from "react-native";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+// import Chart from "../components/Chart";
 
 interface SettingsScreenProps {}
 
@@ -11,8 +13,9 @@ class SettingsScreen extends React.Component<
 > {
   render() {
     return (
-      <SafeAreaView>
-        <Text style={{ flex: 1, justifyContent: "center" }}>Settings</Text>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+        <Text style={{ flex: 1, justifyContent: "center" }}>Settingss</Text>
+        {/* <Chart /> */}
       </SafeAreaView>
     );
   }

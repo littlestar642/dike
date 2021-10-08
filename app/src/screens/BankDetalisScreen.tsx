@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 class BankDetailsScreen extends React.Component {
   render() {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={{flex: 1}}>
         <Text style={{ flex: 1, justifyContent: "center" }}>Bank Details</Text>
       </SafeAreaView>
     );

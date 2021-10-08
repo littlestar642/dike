@@ -13,44 +13,53 @@ import UserProfileScreen from "../screens/UserProfileScreen";
 import BankDetailsScreen from "../screens/BankDetalisScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import InvestmentScreen from "../screens/InvestmentScreen";
+import TransactionScreen from "../screens/TransactionScreen";
+import MutualFundsScreen from "../screens/MutualFundsScreen";
 
 export type AuthStackParams = {
   Login: LoginProps;
   Signup: SignupProps;
+};
+
+export type MainStackParams = {
   Home: undefined;
   Profile: undefined;
   Bank: undefined;
   Settings: undefined;
   Investment: undefined;
+  Transactions: undefined;
+  MutualFund: undefined;
 };
 
-const MainStack = createStackNavigator<AuthStackParams>();
+const AuthStack = createStackNavigator<AuthStackParams>();
+const MainStack = createStackNavigator<MainStackParams>();
 
 type States = {
   isAuthComplete: boolean;
 };
 
 class Main extends Component<any, States> {
-  private auth: Authentication | undefined;
+  private auth: Authentication;
 
   constructor(props: any) {
     super(props);
+    this.auth = new Authentication();
     this.state = {
       isAuthComplete: false,
     };
   }
 
   componentDidMount() {
-    this.auth = new Authentication((authState: number) => {
+    this.auth.userRegisterStateUpdateCallback = (authState: number) => {
       this.listenAuthState(authState);
-    });
+    };
   }
 
   listenAuthState(authState: number) {
     try {
       this.setState((state) => {
         return {
-          isAuthComplete: authState === AuthState.REGISTERED,
+          isAuthComplete: true, // authState === AuthState.REGISTERED,
         };
       });
     } catch (err) {
@@ -59,7 +68,7 @@ class Main extends Component<any, States> {
   }
 
   render() {
-    return (
+    return this.state.isAuthComplete ? (
       <MainStack.Navigator>
         {
           /* {this.state.isAuthComplete }*/ true ? (
@@ -102,6 +111,15 @@ class Main extends Component<any, States> {
           )
         }
       </MainStack.Navigator>
+    ) : (
+      <AuthStack.Navigator>
+        <AuthStack.Screen
+          name="Login"
+          options={{ headerShown: false }}
+          component={LoginScreen}
+        />
+        <AuthStack.Screen name="Signup" component={SignupScreen} />
+      </AuthStack.Navigator>
     );
   }
 }
