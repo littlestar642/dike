@@ -40,81 +40,81 @@ class Main extends Component<any, States> {
     private auth: Authentication;
 
     constructor(props: any) {
-        super(props);
-        this.auth = new Authentication();
-        this.state = {
-            isAuthComplete: false,
-        };
+      super(props);
+      this.auth = new Authentication();
+      this.state = {
+        isAuthComplete: false,
+      };
     }
 
     componentDidMount() {
-        this.auth.userRegisterStateUpdateCallback = (authState: number) => {
-            this.listenAuthState(authState);
-        };
+      this.auth.userRegisterStateUpdateCallback = (authState: number) => {
+        this.listenAuthState(authState);
+      };
     }
 
     listenAuthState(authState: number) {
-        try {
-        this.setState((state) => {
-            return {
-            isAuthComplete: true// authState === AuthState.REGISTERED,
-            };
-        });
-        } catch (err) {
-        console.log("Main.tsx: ", err);
-        }
+      try {
+      this.setState((state) => {
+        return {
+        isAuthComplete: true// authState === AuthState.REGISTERED,
+        };
+      });
+      } catch (err) {
+      console.log("Main.tsx: ", err);
+      }
     }
 
   render() {
     return this.state.isAuthComplete ? (
       <MainStack.Navigator>
-              <MainStack.Screen
-                name="Investment"
-                component={InvestmentScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Transactions"
-                component={TransactionScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Profile"
-                component={UserProfileScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Profile"
-                component={UserProfileScreen}
-                options={{ headerShown: false }}
-              />
-              <MainStack.Screen
-                name="Bank"
-                component={BankDetailsScreen}
-                options={{ headerShown: false }}
-              />
-        </MainStack.Navigator>
-          ) : (
-            <AuthStack.Navigator>
-                <AuthStack.Screen
-                    name="Login"
-                    options={{ headerShown: false }}
-                    component={LoginScreen}
-                />
-                <AuthStack.Screen name="Signup" component={SignupScreen} />
-            </AuthStack.Navigator>
-        );
-    }
+        <MainStack.Screen
+          name="Investment"
+          component={InvestmentScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Transactions"
+          component={TransactionScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Profile"
+          component={UserProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Profile"
+          component={UserProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen
+          name="Bank"
+          component={BankDetailsScreen}
+          options={{ headerShown: false }}
+        />
+      </MainStack.Navigator>
+    ) : (
+      <AuthStack.Navigator>
+          <AuthStack.Screen
+              name="Login"
+              options={{ headerShown: false }}
+              component={LoginScreen}
+          />
+          <AuthStack.Screen name="Signup" component={SignupScreen} />
+      </AuthStack.Navigator>
+    );
+  }
 }
 
 export default Main;
