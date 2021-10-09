@@ -40,7 +40,7 @@ class Consent extends React.Component<ConsentProps, ConsentState> {
     }
 
     viewStateChange (navigation: WebViewNavigation) {
-        if (navigation.url === URLs.redirect) {
+        if (navigation.url === URLs.redirect || navigation.url === URLs.redirect + '/') {
             console.log("success");
         }
         console.log(navigation.url);
