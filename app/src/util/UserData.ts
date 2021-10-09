@@ -5,11 +5,13 @@ import Common from "./CommonUtils";
 class UserData {
     private static _instance: UserData;
     private _transactions: object;
+    private _mutualFunds: object;
     private dataReady: boolean;
 
     private constructor() {
         this.dataReady = false;
-        this._transactions = {};
+        this._transactions = [];
+        this._mutualFunds = {};
         this.fetchAllData();
     }
 
@@ -29,12 +31,25 @@ class UserData {
     private async fetchAllData() {
         let headers = await Authentication.getAPIRequestHeader();
         let transactionStr = await Common.makeApiRequest('GET', URLs.getTransactionDetails, headers);
-        this._transactions = JSON.parse(transactionStr);
+        let data = JSON.parse(transactionStr);
+        if (data.success) {
+            this._transactions = data.msg;
+        }
+
+        let mutualFundsStr = await Common.makeApiRequest('GET', URLs.getMutualFunds, headers);
+        let mfData = JSON.parse(mutualFundsStr);
+        if (mfData.success) {
+            this._mutualFunds = mfData.msg
+        }
         this.dataReady = true;
     }
 
-    public get transactions() {
+    public get transactions(): object {
         return this._transactions;
+    }
+
+    public get mutualFunds(): object {
+        return this._mutualFunds;
     }
 }
 

@@ -8,6 +8,7 @@ import { Icon } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainStackParams } from "../navigation/Main";
 import Authentication, { AuthState } from "../util/Authentication";
+import UserData from "../util/UserData";
 import ConsentScreen from "./DashboardPages/ConsentScreen";
 import HomeScreen from "./DashboardPages/HomeScreen";
 import MenuScreen from "./DashboardPages/MenuScreen";
@@ -91,6 +92,11 @@ class Dashboard extends React.Component<Props, States> {
                 isConsentTaken: isConsentTaken
             };
         });
+        if (isConsentTaken) {
+            setTimeout(() => {
+                UserData.instance;
+            }, 5000);
+        }
     }
 
     componentWillUnmount () {

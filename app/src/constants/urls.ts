@@ -5,7 +5,8 @@ const URLs = Object.freeze({
     redirect: url + 'redirect',
     getConsent: url + 'users/consent/',
     getScore: url + 'users/score',
-    getTransactionDetails: url + 'users/transactions'
+    getTransactionDetails: url + 'users/transactions',
+    getMutualFunds: url + 'users/mutualFunds'
 });
 
 export default URLs;
