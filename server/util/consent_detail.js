@@ -7,7 +7,7 @@ const createData = (mobileNumber) => {
   const consentStart = new Date();
   consentStart.setDate(dateNow.getDate() - 6 * 30)
   const consentEnd = new Date();
-  consentEnd.setDate(dateNow.getDate() - 3 * 30)
+  consentEnd.setDate(dateNow.getDate() - 5 * 30)
   var data = JSON.stringify({
     ver: "1.0",
     timestamp: dateNow.toISOString(),
