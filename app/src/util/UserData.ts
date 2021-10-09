@@ -13,6 +13,7 @@ class UserData {
         this.dataReady = false;
         this._transactions = [];
         this._mutualFunds = {};
+        this._profileDetails = null;
     }
 
     static get instance(): UserData {

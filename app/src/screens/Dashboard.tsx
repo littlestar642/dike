@@ -102,7 +102,7 @@ class Dashboard extends React.Component<Props, States> {
                         isLoading: false
                     }
                 });
-            }, 1000);
+            }, 10000);
         }
     }
 

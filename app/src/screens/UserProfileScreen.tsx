@@ -1,7 +1,6 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { MainStackParams } from "../navigation/Main";
 import Firebase from "../util/FirebaseUtils";
 import UserData from "../util/UserData";
@@ -15,13 +14,17 @@ export default class UserProfileScreen extends Component<Props> {
   constructor (props: Props) {
     super(props);
     this.profileData = UserData.instance.profileDetails
-    console.log(this.profileData)
   }
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.header}>
+          {this.profileData === null ? (
+            <View style={styles.headerContent}>
+              <Text>Let Dike fetch bank data from Account Aggregator</Text>
+            </View>
+          ) : (
           <View style={styles.headerContent}>
             <Text style={styles.name}> {this.profileData.name} </Text>
             <TouchableOpacity>
@@ -37,77 +40,9 @@ export default class UserProfileScreen extends Component<Props> {
               <Text style={styles.userInfo}>{this.profileData.email} </Text>
             </TouchableOpacity>
           </View>
+          )}
         </View>
-
-        <View style={styles.body}>
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => {
-              this.props.navigation.navigate("Home");
-            }}
-          >
-            <View style={styles.iconContent}>
-              <Image
-                style={styles.icon}
-                source={{
-                  uri: "https://img.icons8.com/glyph-neue/64/000000/home.png",
-                }}
-              />
-            </View>
-            <View style={styles.infoContent}>
-              <Text style={styles.info}>Home</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.item} onPress={() => {this.props.navigation.navigate('Settings');}}>
-
-            <View style={styles.iconContent}>
-              <Image
-                style={styles.icon}
-                source={{
-                  uri: "https://img.icons8.com/color/70/000000/administrator-male.png",
-                }}
-              />
-            </View>
-            <View style={styles.infoContent}>
-              <Text style={styles.info}>Settings</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.item}
-            onPress={() => {
-              this.props.navigation.navigate("Bank");
-            }}
-          >
-            <View style={styles.iconContent}>
-              <Image
-                style={styles.icon}
-                source={{
-                  uri: "https://img.icons8.com/emoji/48/000000/bank-emoji.png",
-                }}
-              />
-            </View>
-            <View style={styles.infoContent}>
-              <Text style={styles.info}>Bank Details</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.item} onPress={()=>{Firebase.getInstance().getAuth().signOut()}}>
-            <View style={styles.iconContent}>
-              <Image
-                style={styles.icon}
-                source={{
-                  uri: "https://img.icons8.com/ios-filled/50/000000/logout-rounded.png",
-                }}
-              />
-            </View>
-            <View style={styles.infoContent}>
-              <Text style={styles.info}>Sign out</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }
