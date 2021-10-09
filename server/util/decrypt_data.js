@@ -20,7 +20,7 @@ const transactionGroupMap = {
 
 const decrypt_data = (fi, privateKey, keyMaterial, consent_handle) => {
   fi.forEach(val => {
-    val.data.forEach(d => {
+    val.data.forEach(async d => {
       const body = {
         base64Data: d["encryptedFI"],
         base64RemoteNonce: val["KeyMaterial"]["Nonce"],
@@ -30,70 +30,74 @@ const decrypt_data = (fi, privateKey, keyMaterial, consent_handle) => {
       };
 
       if (val["fipId"] == "APNB") {
-        processBankData(body, consent_handle)
+        await processBankData(body, consent_handle)
       } else if (val["fipId"] == "APMF") {
-        processStocksData(body, consent_handle)
+        await processStocksData(body, consent_handle)
       }
     })
   })
+
+  firebaseUtil.GetInstance().updateDataFetchStatus(consent_handle)
 };
 
-const processBankData = (body, consent_handle) => {
+const processBankData = async (body, consent_handle) => {
   var requestConfig = {
     method: "post",
     url: config.rahasya_url + "/ecc/v1/decrypt",
     data: body,
   };
 
-  axios(requestConfig)
-    .then((res) => {
-      let base64Data = res.data["base64Data"];
-      let decoded_data = JSON.parse(Buffer.from(base64Data, "base64").toString("ascii"));
-      if (decoded_data.account["type"] == "deposit") {
-        processDecodedBankData(decoded_data, consent_handle)
-      } else if (decoded_data.account["type"] == "credit_card") {
-        processDecodedCreditCardData(decoded_data, consent_handle)
-      }
-    })
-    .catch((err) => console.log(err.data.error));
+  try {
+    let res = await axios(requestConfig)
+    let base64Data = res.data["base64Data"];
+    let decoded_data = JSON.parse(Buffer.from(base64Data, "base64").toString("ascii"));
+    if (decoded_data.account["type"] == "deposit") {
+      await processDecodedBankData(decoded_data, consent_handle)
+    } else if (decoded_data.account["type"] == "credit_card") {
+      await processDecodedCreditCardData(decoded_data, consent_handle)
+    }
+  } catch (e) {
+    console.log(e)
+  }
 }
 
-const processStocksData = (body, consent_handle) => {
+const processStocksData = async (body, consent_handle) => {
   var requestConfig = {
     method: "post",
     url: config.rahasya_url + "/ecc/v1/decrypt",
     data: body,
   };
 
-  axios(requestConfig)
-    .then((res) => {
-      let base64Data = res.data["base64Data"];
-      let decoded_data = JSON.parse(Buffer.from(base64Data, "base64").toString("ascii"));
-      if (decoded_data.account["type"] == "mutual_funds") {
-        processDecodedMFData(decoded_data, consent_handle)
-      }
-    })
-    .catch((err) => console.log(err.data.error));
+  try {
+    let res = await axios(requestConfig)
+    let base64Data = res.data["base64Data"];
+    let decoded_data = JSON.parse(Buffer.from(base64Data, "base64").toString("ascii"));
+    if (decoded_data.account["type"] == "mutual_funds") {
+      await processDecodedMFData(decoded_data, consent_handle)
+    }
+    } catch (e) {
+    console.log(e)
+    }
 }
 
-const processDecodedMFData = async (data, consent_handle) =>{
+const processDecodedMFData = async (data, consent_handle) => {
   let summary = data.account["summary"]
-  await firebaseUtil.GetInstance().saveMFSummaryData(summary["currentValue"], summary["investmentValue"],summary["investment"]["holdings"]["holding"], consent_handle)
+  await firebaseUtil.GetInstance().saveMFSummaryData(summary["currentValue"], summary["investmentValue"], summary["investment"]["holdings"]["holding"], consent_handle)
 }
 
 const processDecodedCreditCardData = async (data, consent_handle) => {
   await firebaseUtil.GetInstance().saveCreditCardTransactionData(data["account"]["transactions"], consent_handle)
-  createCCTransactionInsights(data["account"]["transactions"], consent_handle)
+  await createCCTransactionInsights(data["account"]["transactions"], consent_handle)
 }
 
-const processDecodedBankData = (data, consent_handle) => {
+const processDecodedBankData = async (data, consent_handle) => {
   let profileData = data.account.profile.holders
-  processProfileData(profileData, consent_handle)
+  await processProfileData(profileData, consent_handle)
   let summaryData = data.account.summary
-  processSummaryData(summaryData, consent_handle)
+  await processSummaryData(summaryData, consent_handle)
   let transactions = data.account.transactions
-  processTransactionData(transactions, consent_handle)
-  createTransactionInsights(transactions, consent_handle)
+  await processTransactionData(transactions, consent_handle)
+  await createTransactionInsights(transactions, consent_handle)
 }
 
 const processProfileData = async (data, consent_handle) => {
@@ -122,7 +126,7 @@ const createTransactionInsights = (data, consent_handle) => {
   firebaseUtil.GetInstance().updateTransactionInsights(data["startDate"], data["endDate"], totalCredit, totalDebit, consent_handle)
 }
 
-const createCCTransactionInsights = (data, consent_handle) => {
+const createCCTransactionInsights = async (data, consent_handle) => {
   let totalDebit = 0;
   let totalCredit = 0;
   data["transaction"].forEach(val => {
@@ -133,7 +137,7 @@ const createCCTransactionInsights = (data, consent_handle) => {
     }
     // getTransactionGroup(val.narration)
   })
-  firebaseUtil.GetInstance().updateCCTransactionInsights(data["startDate"], data["endDate"], totalCredit, totalDebit, consent_handle)
+  await firebaseUtil.GetInstance().updateCCTransactionInsights(data["startDate"], data["endDate"], totalCredit, totalDebit, consent_handle)
 }
 
 const getTransactionGroup = (narration) => {

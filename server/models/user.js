@@ -14,6 +14,7 @@ class User {
         this.mutualFundsID = mutualFundsID;
         this.creditCardTransactionsID = creditCardTransactionsID
         this.ccTransactionInsightsID = ccTransactionInsightsID
+        
         return {
             ID: this.ID,
             username: this.username,

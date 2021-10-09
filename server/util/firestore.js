@@ -9,7 +9,9 @@ const User = require("../models/user")
 const constants = require("../constants/constants");
 const MutualFunds = require("../models/mutualFunds");
 const TransactionInsights = require("../models/transaction.insights");
-const { start } = require("repl");
+const {
+    start
+} = require("repl");
 
 class FirestoreUtils {
     static instance;
@@ -36,30 +38,27 @@ class FirestoreUtils {
     }
 
     async updateDataConsentStatus(consent_handle, consent_status) {
-        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
-        let status = constants.dataConsentStatus[consent_status]
-        let val = await this.firestore.collection("users").doc(userDetails.ID).update({
-            FIDataConsentStatus: status
-        })
-        if (val.writeTime) {
-            return response.Success("updated successfully")
-        } else {
-            console.log(val)
-            return response.Failure("failed updating")
+        try {
+            let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+            let status = constants.dataConsentStatus[consent_status]
+            let val = await this.firestore.collection("users").doc(userDetails.ID).update({
+                FIDataConsentStatus: status
+            })
+            return response.Success(val)
+        } catch (e) {
+            return response.Failure(e)
         }
     }
 
-    async updateDataFetchStatus(consent_handle, fetch_status) {
-        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
-        let status = constants.dataFetchStatus[fetch_status]
-        let val = await this.firestore.collection("users").doc(userDetails.ID).update({
-            FIDataFetchStatus: status
-        })
-        if (val.writeTime) {
-            return response.Success("updated successfully")
-        } else {
-            console.log(val)
-            return response.Failure("failed updating")
+    async updateDataFetchStatus(consent_handle) {
+        try {
+            let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+            let val = await this.firestore.collection("users").doc(userDetails.ID).update({
+                FIDataFetchStatus: 1
+            })
+            return response.Success(val)
+        } catch (e) {
+            return response.Failure(e)
         }
     }
 
@@ -253,15 +252,15 @@ class FirestoreUtils {
         }
     }
 
-    async GenerateAndFetchUserScore(uid){
-        try{
+    async GenerateAndFetchUserScore(uid) {
+        try {
             let userDetails = await (await this.firestore.collection("users").doc(uid).get()).data()
             let cci = (await this.firestore.collection("ccTransactionInsights").doc(userDetails["ccTransactionInsightsID"]).get()).data()
             let di = (await this.firestore.collection("transactionInsights").doc(userDetails["transactionInsightsID"]).get()).data()
             let mfi = (await this.firestore.collection("mutualFunds").doc(userDetails["mutualFundsID"]).get()).data()
-            let score = ((parseInt(cci.totalCredits) - parseInt(cci.totalDebits)) * 0.3 + (parseInt(di.totalCredits) - parseInt(di.totalDebits)) *0.4 + (parseInt(mfi.currentValue) - parseInt(mfi.investmentValue)) * 0.3) / 1000
+            let score = ((parseInt(cci.totalCredits) - parseInt(cci.totalDebits)) * 0.3 + (parseInt(di.totalCredits) - parseInt(di.totalDebits)) * 0.4 + (parseInt(mfi.currentValue) - parseInt(mfi.investmentValue)) * 0.3) / 1000
             return response.Success(parseInt(score))
-        }catch(e){
+        } catch (e) {
             response.Failure(e)
         }
     }
