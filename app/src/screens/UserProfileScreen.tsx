@@ -1,6 +1,8 @@
 import { StackNavigationProp } from "@react-navigation/stack";
 import React, { Component } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { color } from "react-native-elements/dist/helpers";
+import colors from "../constants/colors";
 import { MainStackParams } from "../navigation/Main";
 import Firebase from "../util/FirebaseUtils";
 import UserData from "../util/UserData";
@@ -11,7 +13,7 @@ type Props = {
 
 export default class UserProfileScreen extends Component<Props> {
   profileData;
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props);
     this.profileData = UserData.instance.profileDetails
   }
@@ -25,21 +27,21 @@ export default class UserProfileScreen extends Component<Props> {
               <Text>Let Dike fetch bank data from Account Aggregator</Text>
             </View>
           ) : (
-          <View style={styles.headerContent}>
-            <Text style={styles.name}> {this.profileData.name} </Text>
-            <TouchableOpacity>
-              <Text style={styles.userInfo}>{this.profileData.dob} </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.userInfo}> {this.profileData.mobile} </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.userInfo}>{this.profileData.pan} </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={styles.userInfo}>{this.profileData.email} </Text>
-            </TouchableOpacity>
-          </View>
+            <View style={styles.headerContent}>
+              <Text style={styles.name}> {this.profileData.name} </Text>
+              <TouchableOpacity>
+                <Text style={styles.userInfo}>DOB - {this.profileData.dob} </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.userInfo}>MOB - {this.profileData.mobile} </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.userInfo}>PAN - {this.profileData.pan} </Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.userInfo}>Mail - {this.profileData.email} </Text>
+              </TouchableOpacity>
+            </View>
           )}
         </View>
       </View>
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    backgroundColor: "rgb(210, 242, 249)",
+    backgroundColor: colors.white,
     flex: 1,
   },
   headerContent: {
@@ -60,29 +62,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  avatar: {
-    width: "50%",
-    height: "50%",
-    borderRadius: 63,
-    borderWidth: 4,
-    borderColor: "rgb(6, 38, 45)",
-    marginBottom: 10,
-  },
   name: {
     fontSize: 32,
     fontStyle: "italic",
-    color: "rgb(6, 38, 45)",
+    color: colors.primary,
     fontWeight: "bold",
   },
   userInfo: {
     marginVertical: 5,
     fontSize: 20,
-    color: "rgba(6, 38, 45,0.7)",
+    color: colors.primaryDark,
     fontWeight: "bold",
+    borderBottomColor:colors.gray,
+    borderBottomWidth:2
   },
   body: {
     flex: 1.1,
-    backgroundColor: "#2193b0",
+    backgroundColor: colors.white,
     alignItems: "center",
     justifyContent: "flex-start",
   },

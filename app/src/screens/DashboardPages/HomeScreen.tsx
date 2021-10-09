@@ -13,21 +13,20 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white
   },
   components1: {
-    backgroundColor: colors.primaryDark,
     padding: 10,
   },
   componnets2: {
     flex: 1,
     padding: 10,
     borderTopWidth: 2,
-    borderTopColor: "rgb(120, 215, 237)",
+    borderTopColor: colors.white,
   },
   componnets3: {
     flex: 1,
-    backgroundColor: "rgb(210, 242, 249)",
+    backgroundColor: colors.white,
     padding: 10,
     borderTopWidth: 2,
-    borderTopColor: "rgb(120, 215, 237)",
+    borderTopColor: colors.white,
   },
 });
 
@@ -38,11 +37,11 @@ const HomeScreen = () => {
         <ExpensesOverview />
       </View>
       <View style={styles.componnets2}>
-      <Text style={{color: colors.gray, fontSize: 22, textAlign:"center"}}> Recent Transactions </Text>
+      <Text style={{color: colors.primary, fontSize: 22, textAlign:"center", paddingBottom:5}}> Recent Transactions </Text>
         <Transactions></Transactions>
       </View>
       <View style={styles.componnets3}>
-        <Text style={{color: colors.gray, fontSize: 22, textAlign:"center"}}> Offers </Text>
+        <Text style={{color: colors.primary, fontSize: 22, textAlign:"center"}}> Offers </Text>
         <Offers></Offers>
       </View>
     </View>

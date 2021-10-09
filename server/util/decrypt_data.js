@@ -36,8 +36,6 @@ const decrypt_data = (fi, privateKey, keyMaterial, consent_handle) => {
       }
     })
   })
-
-  firebaseUtil.GetInstance().updateDataFetchStatus(consent_handle)
 };
 
 const processBankData = async (body, consent_handle) => {
@@ -83,6 +81,7 @@ const processStocksData = async (body, consent_handle) => {
 const processDecodedMFData = async (data, consent_handle) => {
   let summary = data.account["summary"]
   await firebaseUtil.GetInstance().saveMFSummaryData(summary["currentValue"], summary["investmentValue"], summary["investment"]["holdings"]["holding"], consent_handle)
+  await firebaseUtil.GetInstance().updateDataFetchStatus(consent_handle)
 }
 
 const processDecodedCreditCardData = async (data, consent_handle) => {

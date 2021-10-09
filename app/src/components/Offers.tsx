@@ -63,7 +63,7 @@ export default class App extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(210, 242, 249)",
+    backgroundColor: colors.white,
   },
   cards: {
     marginTop: 20,

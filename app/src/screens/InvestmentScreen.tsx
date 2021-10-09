@@ -1,13 +1,14 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import colors from "../constants/colors";
 
 const InvestmentScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
         <TouchableOpacity style={styles.totalinv}>
-          <Text style={{flex: 1, fontSize: 20, fontWeight: "bold", justifyContent:"center" }}>
+          <Text style={{flex: 1, fontSize: 20, fontWeight: "bold", justifyContent:"center" , color: colors.gray}}>
             Total Investment
           </Text>
           <Text
@@ -16,53 +17,19 @@ const InvestmentScreen = () => {
               fontSize: 15,
               fontWeight: "bold",
               justifyContent: "center",
+              color: colors.gray
             }}
           >
-            Rs 8,100
+            Rs 26,208
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.invs}>
-          <Text style={{ flex: 2.5, fontSize: 15 }}>Direct Mutual Funds</Text>
-          <Text style={styles.invsText}>Rs 5,100</Text>
+          <Text style={{ flex: 2.5, fontSize: 15, color: colors.gray }}>Direct Mutual Funds</Text>
+          <Text style={styles.invsText}>Rs 10,752</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.invs}>
-          <Text style={{ flex: 2.5, fontSize: 15 }}>Fixed Deposit</Text>
-          <Text style={styles.invsText}>Rs 3,000</Text>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          marginVertical: 10,
-          height: 120,
-          width: 360,
-          flexDirection: "row",
-          borderWidth: 0.5,
-          borderRadius: 20,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <TouchableOpacity style={{ flex: 1, margin: 30 }}>
-          <Text style={{ fontSize: 16 }}>
-            Expense Tracker{" "}
-            <Text
-              style={{ fontWeight: "bold", fontSize: 20, color: "#12c1cb" }}
-            >
-              {" "}
-              Start now{">"}{" "}
-            </Text>
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={{ flex: 1, margin: 30 }}>
-          <Text style={{ fontSize: 16 }}>
-            Bill Tracker{" "}
-            <Text
-              style={{ fontWeight: "bold", fontSize: 20, color: "#12c1cb" }}
-            >
-              {" "}
-              View Bills{">"}{" "}
-            </Text>
-          </Text>
+          <Text style={{ flex: 2.5, fontSize: 15, color: colors.gray }}>Fixed Deposit</Text>
+          <Text style={styles.invsText}>Rs 15,456</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -80,7 +47,6 @@ const styles = StyleSheet.create({
     marginTop: 30,
     height: 350,
     width: 360,
-    backgroundColor: "lightblue",
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
@@ -115,5 +81,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     alignItems: "center",
     justifyContent: "center",
+    color: colors.primary
   },
 });

@@ -55,17 +55,17 @@ class ExpensesOverview extends React.Component<any, overviewStates> {
             <View style={{ flexDirection: "row" }}>
                 <View style = {styles.container1}>
                     <AnimatedCircularProgress size={100} width={7} lineCap="round" rotation={225} backgroundWidth={2} fill={this.state.score}
-                    tintColor={colors.white} backgroundColor={colors.gray} arcSweepAngle={270}>
+                    tintColor={colors.gray} backgroundColor={colors.gray} arcSweepAngle={270}>
                     { (fill) => (
                         <View style={{alignItems: "center"}}>
-                            <Text style={{color: colors.white, fontSize: 12}}>Score</Text>
-                            <Text style={{fontSize: 40, fontWeight: 'bold', color: colors.white}}>{this.state.score}</Text>
+                            <Text style={{color: colors.gray, fontSize: 12}}>Score</Text>
+                            <Text style={{fontSize: 40, fontWeight: 'bold', color: colors.gray}}>{this.state.score}</Text>
                         </View>
                     )}
                     </AnimatedCircularProgress>
                 </View>
                 <View style = {styles.container2}>
-                    <Text style={{color: colors.white, fontSize: 14}}>Current Month Summary</Text>
+                    <Text style={{color: colors.gray, fontSize: 14}}>Current Month Summary</Text>
                     <Text style={styles.label}>
                         Debit:
                     </Text>
@@ -97,11 +97,11 @@ const styles = StyleSheet.create({
         alignItems: "flex-end"
     },
     label: {
-        color: colors.white,
+        color: colors.gray,
         fontSize: 10
     },
     amount: {
-        color: colors.white,
+        color: colors.gray,
         fontWeight: 'bold',
         fontSize: 16
     }

@@ -11,8 +11,8 @@ import colors from "../constants/colors";
 import UserData from "../util/UserData";
 
 
-const Transactions = ({}) => {
-  const data = UserData.instance.transactions.sort((a, b) => {return new Date(a.transactionTimestamp) < new Date(b.transactionTimestamp) ? 1 : -1});
+const Transactions = ({ }) => {
+  const data = UserData.instance.transactions.sort((a, b) => { return new Date(a.transactionTimestamp) < new Date(b.transactionTimestamp) ? 1 : -1 });
   let transactionData = data.splice(0, 6);
   return (
     <View style={styles.container}>
@@ -21,17 +21,17 @@ const Transactions = ({}) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listitem}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={{fontSize: 12}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 12, color: colors.gray }}>
                 Ref: {item.reference}
               </Text>
-              <Text style={{}}>
+              <Text style={{ color: colors.gray }}>
                 Date: {item.valueDate}
               </Text>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}>
-              <Text style={{fontSize: 16}}>₹ {item.amount}</Text>
-              <Text style={{}}>Type: {item.type}</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5}}>
+              <Text style={{ fontSize: 16, color: colors.gray }}>₹ {item.amount}</Text>
+              <Text style={{ color: colors.gray }}>Type: {item.type}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -44,7 +44,7 @@ export default Transactions;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgb(210, 242, 249)",
+    backgroundColor: colors.white,
   },
   listitem: {
     padding: 10,
@@ -52,9 +52,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
     borderWidth: 1,
     borderBottomWidth: 1,
-    borderColor: "rgb(31, 189, 224)",
     borderRadius: 5,
-    backgroundColor: "#6dd5ed",
+    backgroundColor: colors.white,
   },
   debit: {
     borderColor: '#f00'

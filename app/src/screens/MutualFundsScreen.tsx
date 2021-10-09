@@ -12,7 +12,6 @@ import UserData from "../util/UserData";
 
 const MutualFundsScreen = () => {
   let funds: Array<any> = UserData.instance.mutualFunds?.holdings || [];
-  console.log(funds)
 
   return funds.length == 0 ? (
     <Text>Nothing to show here</Text>
@@ -30,7 +29,9 @@ const MutualFundsScreen = () => {
                 justifyContent: "center",
                 fontSize: 24,
                 paddingTop: 20,
+                paddingBottom:30,
                 fontWeight: "bold",
+                color: colors.gray
               }}
             >
               {item.amc}
@@ -41,7 +42,7 @@ const MutualFundsScreen = () => {
               <Text style={styles.colContent}>
                 Closing Units
               </Text>
-              <Text style = {styles.colContentBtm}> {item.closingUnits} </Text>
+              <Text style = {styles.colContentBtm}> {item.closingUnits} units </Text>
             </View>
             <View style={styles.cardBottomCol}>
               <Text style={styles.colContent}>
@@ -71,7 +72,6 @@ const styles = StyleSheet.create({
   },
   card: {
     flex:1,
-    backgroundColor: colors.white,
     marginHorizontal: 5,
     marginVertical: 2,
     alignItems: "center",
@@ -96,14 +96,16 @@ const styles = StyleSheet.create({
   colContent: {
     fontSize: 20,
     padding: 10,
-    color: colors.primaryDark,
+    color: colors.gray,
     textAlign:"center",
-    alignItems:"center"
+    alignItems:"center",
+    fontWeight:"bold"
   },
   colContentBtm:{
     fontSize: 20,
     padding: 10,
     textAlign:"center",
-    alignItems:"center"
+    alignItems:"center",
+    color:colors.primary
   }
 });

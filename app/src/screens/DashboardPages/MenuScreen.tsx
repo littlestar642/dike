@@ -26,7 +26,7 @@ type MenuItemProps = {
 function MenuItem({onPress=()=>{}, children=''}: MenuItemProps) {
     return (
         <TouchableOpacity onPress={onPress} style={{padding: 10, marginRight: 20, marginLeft: 20, borderBottomColor: colors.background, borderBottomWidth: 1}}>
-            <Text style={{fontSize: 20}}>{children}</Text>
+            <Text style={{fontSize: 20, color: colors.primary}}>{children}</Text>
         </TouchableOpacity>
     )
 }
@@ -70,16 +70,16 @@ class MenuScreen extends React.Component<MenuProps, MenuStates> {
 
     render () {
         return (
-            <SafeAreaView style={{ flex: 1, margin: 0, backgroundColor: colors.primaryDark }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15, paddingBottom: 30, paddingTop: 0, backgroundColor: colors.primaryDark}}>
-                    <Text style={{fontSize: 14, color: '#fff'}}>
+            <SafeAreaView style={{ flex: 1, margin: 0, backgroundColor: colors.white }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 15, paddingBottom: 30, paddingTop: 0, backgroundColor: colors.white}}>
+                    <Text style={{fontSize: 14, color: colors.gray}}>
                         Logged in as:
                     </Text>
                     <View style={{ flexDirection: 'column', alignItems: 'flex-end' }}>
-                        <Text style={{fontSize: 24, color: '#fff'}}>
+                        <Text style={{fontSize: 24, color: colors.gray}}>
                             {Firebase.getInstance().getAuth().currentUser?.displayName}
                         </Text>
-                        <Text style={{fontSize: 12, color: '#fff', fontWeight: 'bold'}}>
+                        <Text style={{fontSize: 12, color: colors.gray, fontWeight: 'bold'}}>
                             {Firebase.getInstance().getAuth().currentUser?.phoneNumber}
                         </Text>
                     </View>

@@ -5,8 +5,10 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Icon } from "react-native-elements";
+import { color } from "react-native-elements/dist/helpers";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CircularLoader from "../components/Loader";
+import colors from "../constants/colors";
 import { MainStackParams } from "../navigation/Main";
 import Authentication, { AuthState } from "../util/Authentication";
 import Firebase from "../util/FirebaseUtils";
@@ -27,7 +29,7 @@ type States = {
 
 export type DashboardTabProps = {
     Home: undefined,
-    Menu: {isConsentTaken: boolean},
+    Menu: { isConsentTaken: boolean },
 };
 
 const DashboardNavigator = createMaterialTopTabNavigator<DashboardTabProps>();
@@ -37,13 +39,11 @@ type DashboardProps = {
     isLoading: boolean;
 }
 
-function TabIcons( route: RouteProp<DashboardTabProps, keyof DashboardTabProps>, focused: boolean, color: string, ) {
-    if (route.name === 'Home')
-    {
+function TabIcons(route: RouteProp<DashboardTabProps, keyof DashboardTabProps>, focused: boolean, color: string,) {
+    if (route.name === 'Home') {
         return <Icon name="home" color={color} />
     }
-    if (route.name === 'Menu')
-    {
+    if (route.name === 'Menu') {
         return <Icon name="menu" color={color} />
     }
 }
@@ -52,8 +52,8 @@ function SyncWaitScreen() {
     return (
         <View>
             <CircularLoader />
-            <View style={{alignItems: "center"}}>
-                <Text>
+            <View style={{ alignItems: "center" }}>
+                <Text style={{ color: colors.primary }}>
                     Please wait till Dike syncs your Finance Data
                 </Text>
             </View>
@@ -64,16 +64,16 @@ function SyncWaitScreen() {
 function DashboardTabs(props: DashboardProps) {
     console.log(props.isConsentTaken);
     return (
-        <DashboardNavigator.Navigator 
+        <DashboardNavigator.Navigator
             initialRouteName='Home'
-            screenOptions={({route}) => ({
-                tabBarIcon: ({focused, color}) => {return TabIcons(route, focused, color);},
+            screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color }) => { return TabIcons(route, focused, color); },
                 tabBarShowLabel: false
             })}
         >
             <DashboardNavigator.Screen
                 name='Home'
-                component={ props.isConsentTaken ? (props.isLoading ? SyncWaitScreen : HomeScreen) : ConsentScreen }
+                component={props.isConsentTaken ? (props.isLoading ? SyncWaitScreen : HomeScreen) : ConsentScreen}
             />
             <DashboardNavigator.Screen
                 name='Menu'
@@ -87,21 +87,21 @@ class Dashboard extends React.Component<Props, States> {
     private auth: Authentication | undefined;
     private releaseDataProcessListener: (() => void) | undefined;
 
-    constructor (props: Props) {
-        super (props);
+    constructor(props: Props) {
+        super(props);
         this.state = {
             isLoading: true,
             isConsentTaken: false
         };
     }
-    
-    componentDidMount () {
+
+    componentDidMount() {
         this.auth = new Authentication((state) => {
             this.updateConsentState(state === AuthState.CONSENTPROVIDED);
         });
     }
 
-    updateConsentState (isConsentTaken: boolean) {
+    updateConsentState(isConsentTaken: boolean) {
         this.setState(state => {
             return {
                 ...state,
@@ -123,7 +123,7 @@ class Dashboard extends React.Component<Props, States> {
         }
     }
 
-    async dataFetchComplete () {
+    async dataFetchComplete() {
         await UserData.instance.refreshData();
         this.setState(state => {
             return {
@@ -135,11 +135,11 @@ class Dashboard extends React.Component<Props, States> {
             this.releaseDataProcessListener();
     }
 
-    componentWillUnmount () {
+    componentWillUnmount() {
         this.auth?.releaseInstance();
     }
 
-    render () {
+    render() {
         return (
             <SafeAreaView style={styles.root}>
                 <DashboardTabs isConsentTaken={this.state.isConsentTaken} isLoading={this.state.isLoading} />
