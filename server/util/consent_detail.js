@@ -18,7 +18,7 @@ const createData = (mobileNumber) => {
       consentMode: "VIEW",
       fetchType: "ONETIME",
       consentTypes: ["TRANSACTIONS", "PROFILE", "SUMMARY"],
-      fiTypes: ["DEPOSIT","CREDIT_CARD","MUTUAL_FUNDS","EQUITIES","SIP"],
+      fiTypes: ["DEPOSIT","CREDIT_CARD","MUTUAL_FUNDS", "TERM_DEPOSIT", "SIP"],
       DataConsumer: {
         id: "FIU"
       },
@@ -43,7 +43,7 @@ const createData = (mobileNumber) => {
       },
       Frequency: {
         unit: "MONTH",
-        value: 300
+        value: 4
       },
       DataFilter: [{
         type: "TRANSACTIONAMOUNT",

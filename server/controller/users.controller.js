@@ -70,9 +70,19 @@ const GenerateUserScore = async(req,res) =>{
     }
 }
 
+const GetProfileDetails = async (req,res)=>{
+    let val = await req.firestore.getUserProfileDetails(req.user["uid"])
+    if (val.success){
+        res.send(val)
+    } else{
+        res.status(500).send(val)
+    }
+}
+
 module.exports = {
     Consent,
     GetUserTransactions, 
     GetUserMutualFunds,
-    GenerateUserScore
+    GenerateUserScore,
+    GetProfileDetails
 }

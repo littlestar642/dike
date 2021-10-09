@@ -311,6 +311,17 @@ class FirestoreUtils {
         }
     }
 
+    async getUserProfileDetails(userID) {
+        try {
+            let val = await (await this.firestore.collection("users").doc(userID).get()).data()
+            let details = await (await this.firestore.collection("profile").doc(val["bankProfileID"]).get()).data()
+            return response.Success(details)
+        } catch (e) {
+            console.log("error in getting user details", e)
+            return response.Failure(e)
+        }
+    }
+
     isDoc(path) {
         return path.split('/').length % 2 === 0;
     }

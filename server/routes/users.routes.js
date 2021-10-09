@@ -9,6 +9,7 @@ router.post("/signup", signupController)
 router.get("/transactions", usersController.GetUserTransactions);
 router.get("/mutualFunds", usersController.GetUserMutualFunds)
 router.get("/score",usersController.GenerateUserScore);
+router.get("/profile",usersController.GetProfileDetails);
 
 
 module.exports = router
