@@ -127,7 +127,7 @@ class Authentication {
                 phoneNumber: phoneNumber
             }
         );
-        return JSON.parse(result).success; // TODO: Implement after api return change
+        return JSON.parse(result).success;
         // return result === 'user created successfully';
     }
 

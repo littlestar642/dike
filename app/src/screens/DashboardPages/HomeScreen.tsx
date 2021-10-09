@@ -17,8 +17,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   componnets2: {
-    flex: 1.5,
-    backgroundColor: "rgb(210, 242, 249)",
+    flex: 1,
     padding: 10,
     borderTopWidth: 2,
     borderTopColor: "rgb(120, 215, 237)",
