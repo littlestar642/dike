@@ -94,16 +94,15 @@ class Dashboard extends React.Component<Props, States> {
             };
         });
         if (isConsentTaken) {
-            setTimeout(() => {
-                console.log('fetch data');
-                UserData.instance;
+            setTimeout(async () => {
+                await UserData.instance.refreshData();
                 this.setState(state => {
                     return {
                         ...state,
                         isLoading: false
                     }
                 });
-            }, 5000);
+            }, 1000);
         }
     }
 

@@ -13,7 +13,6 @@ class UserData {
         this.dataReady = false;
         this._transactions = [];
         this._mutualFunds = {};
-        this.fetchAllData();
     }
 
     static get instance(): UserData {
