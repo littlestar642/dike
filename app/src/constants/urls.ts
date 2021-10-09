@@ -6,7 +6,8 @@ const URLs = Object.freeze({
     getConsent: url + 'users/consent/',
     getScore: url + 'users/score',
     getTransactionDetails: url + 'users/transactions',
-    getMutualFunds: url + 'users/mutualFunds'
+    getMutualFunds: url + 'users/mutualFunds',
+    getProfileDetails : url + 'users/profile'
 });
 
 export default URLs;

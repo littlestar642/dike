@@ -7,6 +7,7 @@ class UserData {
     private _transactions: Array<any>;
     private _mutualFunds: any;
     private dataReady: boolean;
+    private _profileDetails: any;
 
     private constructor() {
         this.dataReady = false;
@@ -41,6 +42,12 @@ class UserData {
         if (mfData.success) {
             this._mutualFunds = mfData.msg
         }
+
+        let profileDetails = await Common.makeApiRequest('GET', URLs.getProfileDetails, headers)
+        let pd = JSON.parse(profileDetails);
+        if (pd.success) {
+            this._profileDetails = pd.msg.holder[0]
+        }
         this.dataReady = true;
     }
 
@@ -50,6 +57,10 @@ class UserData {
 
     public get mutualFunds(): any {
         return this._mutualFunds;
+    }
+
+    public get profileDetails():any {
+        return this._profileDetails
     }
 }
 

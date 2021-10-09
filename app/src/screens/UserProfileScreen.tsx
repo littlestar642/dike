@@ -4,15 +4,18 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MainStackParams } from "../navigation/Main";
 import Firebase from "../util/FirebaseUtils";
+import UserData from "../util/UserData";
 
 type Props = {
   navigation: StackNavigationProp<MainStackParams>;
 };
 
 export default class UserProfileScreen extends Component<Props> {
+  profileData;
   constructor (props: Props) {
-
     super(props);
+    this.profileData = UserData.instance.profileDetails
+    console.log(this.profileData)
   }
 
   render() {

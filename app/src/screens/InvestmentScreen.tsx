@@ -7,32 +7,27 @@ const InvestmentScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.card}>
         <TouchableOpacity style={styles.totalinv}>
-          <Text style={{ flex: 2.5, fontSize: 20, fontWeight: "bold" }}>
+          <Text style={{flex: 1, fontSize: 20, fontWeight: "bold", justifyContent:"center" }}>
             Total Investment
           </Text>
           <Text
             style={{
               flex: 1,
-              fontSize: 20,
+              fontSize: 15,
               fontWeight: "bold",
-              alignItems: "center",
               justifyContent: "center",
             }}
           >
-            $10,000
+            Rs 8,100
           </Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.invs}>
-          <Text style={{ flex: 2.5, fontSize: 20 }}>Direct Mutual Funds</Text>
-          <Text style={styles.invsText}>$5,000</Text>
+          <Text style={{ flex: 2.5, fontSize: 15 }}>Direct Mutual Funds</Text>
+          <Text style={styles.invsText}>Rs 5,100</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.invs}>
-          <Text style={{ flex: 2.5, fontSize: 20 }}>Fixed Deposit</Text>
-          <Text style={styles.invsText}>$3,000</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.invsLast}>
-          <Text style={{ flex: 2.5, fontSize: 20 }}>NPS</Text>
-          <Text style={styles.invsText}>$2,000</Text>
+          <Text style={{ flex: 2.5, fontSize: 15 }}>Fixed Deposit</Text>
+          <Text style={styles.invsText}>Rs 3,000</Text>
         </TouchableOpacity>
       </View>
       <View
@@ -92,7 +87,7 @@ const styles = StyleSheet.create({
   },
   totalinv: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: "column",
     margin: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -106,7 +101,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     marginHorizontal: 30,
     marginVertical: 10,
-    borderBottomWidth: 1,
   },
   invsLast: {
     flex: 1,
@@ -118,7 +112,7 @@ const styles = StyleSheet.create({
   },
   invsText: {
     flex: 1,
-    fontSize: 20,
+    fontSize: 15,
     alignItems: "center",
     justifyContent: "center",
   },
