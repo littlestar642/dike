@@ -8,6 +8,8 @@ const response = require("./response")
 const User = require("../models/user")
 const constants = require("../constants/constants");
 const MutualFunds = require("../models/mutualFunds");
+const TransactionInsights = require("../models/transaction.insights");
+const { start } = require("repl");
 
 class FirestoreUtils {
     static instance;
@@ -27,14 +29,6 @@ class FirestoreUtils {
         }
         return FirestoreUtils.instance;
     }
-
-    // saveDocument(collectionName, obj) {
-    //     this.firestore.collection(collectionName).add(obj).then((ref)=>{
-    //         console.log("Document written with ID: ", ref.id);
-    //     }).catch(e=>{
-    //         console.log("error in saving doc", e)
-    //     })
-    // }
 
     async getUserDetailsFromConsentHandle(consent_handle) {
         let uid = (await this.firestore.collection("consentHandleMap").doc(consent_handle).get()).data().ID
@@ -81,7 +75,6 @@ class FirestoreUtils {
             }
         } else {
             this.firestore.collection("profile").add(obj).then(async (ref) => {
-                console.log("Document written with ID: ", ref.id);
                 let resp = await this.firestore.collection("users").doc(userDetails.ID).update({
                     bankProfileID: ref.id
                 })
@@ -118,7 +111,6 @@ class FirestoreUtils {
     }
 
     async saveMFSummaryData(currentValue, investmentValue, holding, consent_handle) {
-        console.log(consent_handle)
         let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
         let mf = new MutualFunds(currentValue, investmentValue, holding)
         if (userDetails.mutualFundsID !== -1) {
@@ -167,6 +159,79 @@ class FirestoreUtils {
         }
     }
 
+    async saveCreditCardTransactionData(obj, consent_handle) {
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        if (userDetails.creditCardTransactionsID !== -1) {
+            let updateRes = await this.firestore.collection("ccTransaction").doc(userDetails.creditCardTransactionsID).update(obj)
+            if (updateRes.writeTime) {
+                return response.Success(updateRes.writeTime)
+            } else {
+                return response.Failure("error in updating credit card transactions data")
+            }
+        } else {
+            this.firestore.collection("ccTransaction").add(obj).then(async (ref) => {
+                console.log("Document written with ID: ", ref.id);
+                let resp = await this.firestore.collection("users").doc(userDetails.ID).update({
+                    creditCardTransactionsID: ref.id
+                })
+                return response.Success(resp.writeTime)
+            }).catch(e => {
+                console.log("error in saving doc", e)
+                return response.Failure(e)
+            })
+        }
+    }
+
+    async updateTransactionInsights(startDate, endDate, totalCredit, totalDebit, consent_handle) {
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        let obj = new TransactionInsights(startDate, endDate, totalCredit, totalDebit)
+        if (userDetails.transactionInsightsID !== -1) {
+            let updateRes = await this.firestore.collection("transactionInsights").doc(userDetails.transactionInsightsID).update(obj)
+            if (updateRes.writeTime) {
+                return response.Success(updateRes.writeTime)
+            } else {
+                console.log(updateRes)
+                return response.Failure("error in updating transactions data")
+            }
+        } else {
+            this.firestore.collection("transactionInsights").add(obj).then(async (ref) => {
+                console.log("Document written with ID: ", ref.id);
+                let resp = await this.firestore.collection("users").doc(userDetails.ID).update({
+                    transactionInsightsID: ref.id
+                })
+                return response.Success(resp.writeTime)
+            }).catch(e => {
+                console.log("error in saving doc", e)
+                return response.Failure(e)
+            })
+        }
+    }
+
+    async updateCCTransactionInsights(startDate, endDate, totalCredit, totalDebit, consent_handle) {
+        let userDetails = await this.getUserDetailsFromConsentHandle(consent_handle)
+        let obj = new TransactionInsights(startDate, endDate, totalCredit, totalDebit)
+        if (userDetails.ccTransactionInsightsID !== -1) {
+            let updateRes = await this.firestore.collection("ccTransactionInsights").doc(userDetails.ccTransactionInsightsID).update(obj)
+            if (updateRes.writeTime) {
+                return response.Success(updateRes.writeTime)
+            } else {
+                console.log(updateRes)
+                return response.Failure("error in updating cc transactions data")
+            }
+        } else {
+            this.firestore.collection("ccTransactionInsights").add(obj).then(async (ref) => {
+                console.log("Document written with ID: ", ref.id);
+                let resp = await this.firestore.collection("users").doc(userDetails.ID).update({
+                    ccTransactionInsightsID: ref.id
+                })
+                return response.Success(resp.writeTime)
+            }).catch(e => {
+                console.log("error in saving doc", e)
+                return response.Failure(e)
+            })
+        }
+    }
+
     async FetchTrasactionsForUser(uid) {
         try {
             let userDetails = await (await this.firestore.collection("users").doc(uid).get()).data()
@@ -188,6 +253,19 @@ class FirestoreUtils {
         }
     }
 
+    async GenerateAndFetchUserScore(uid){
+        try{
+            let userDetails = await (await this.firestore.collection("users").doc(uid).get()).data()
+            let cci = (await this.firestore.collection("ccTransactionInsights").doc(userDetails["ccTransactionInsightsID"]).get()).data()
+            let di = (await this.firestore.collection("transactionInsights").doc(userDetails["transactionInsightsID"]).get()).data()
+            let mfi = (await this.firestore.collection("mutualFunds").doc(userDetails["mutualFundsID"]).get()).data()
+            let score = ((parseInt(cci.totalCredits) - parseInt(cci.totalDebits)) * 0.3 + (parseInt(di.totalCredits) - parseInt(di.totalDebits)) *0.4 + (parseInt(mfi.currentValue) - parseInt(mfi.investmentValue)) * 0.3) / 1000
+            return response.Success(parseInt(score))
+        }catch(e){
+            response.Failure(e)
+        }
+    }
+
     async updateConsentHandleForUser(ID, consentHandle) {
         try {
             await this.firestore.collection("users").doc(ID).update({
@@ -204,7 +282,7 @@ class FirestoreUtils {
     }
 
     async createUser(ID, username, phoneNumber) {
-        let user = new User(ID, username, phoneNumber, "", -1, -1, -1, -1, -1, -1, -1, -1)
+        let user = new User(ID, username, phoneNumber, "", -1, -1, -1, -1, -1, -1, -1, -1, -1, -1)
         try {
             let userRef = await this.firestore.collection("users").doc(ID).create(user)
             return response.Success(userRef.writeTime)
@@ -226,7 +304,6 @@ class FirestoreUtils {
     async getUserDetails(userID) {
         try {
             let val = await admin.auth().getUser(userID)
-            console.log(val)
             return response.Success(val)
         } catch (e) {
             console.log("error in getting user details", e)
