@@ -14,6 +14,7 @@ class Firebase {
         firebase.initializeApp(firebaseConfig);
 
         this.auth = firebase.auth();
+        this.auth.signInWithEmailAndPassword('test@test.in', 'password'); // Todo: remove this line to enable normal login
         this.authListeners = new Map();
         this.unique = 0;
         this.auth.onAuthStateChanged((user) => {

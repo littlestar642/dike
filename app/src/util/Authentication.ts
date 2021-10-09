@@ -6,11 +6,12 @@ import Firebase from './FirebaseUtils';
 export const AuthState = Object.freeze({
     NOTSIGNEDIN: 0,
     NOTREGISTERED: 1,
-    REGISTERED: 2
+    REGISTERED: 2,
+    CONSENTPROVIDED: 3
 });
 
 class Authentication {
-    private _isUserRegistered: boolean | undefined;
+    private userAuthState: number | undefined;
     private _unsubscribeDocListener: { (): void; } | null | undefined;
     private _userRegisterStateUpdateCallback: ((state: number) => void) | undefined | null;
     private authListenerId: number;
@@ -21,15 +22,16 @@ class Authentication {
     }
     
     public get isSignedIn(): boolean {
-        return Firebase.getInstance().getAuth().currentUser !== null;
+        return (this.userAuthState || 0) >= AuthState.NOTREGISTERED;
     }
     public get isUserRegistered(): boolean {
-        return this._isUserRegistered || false;
+        return (this.userAuthState || 0) >= AuthState.REGISTERED;
     }
 
     constructor(callback?: ((state: number) => void) | null | undefined) {
         this._userRegisterStateUpdateCallback = callback;
         this.authListenerId = Firebase.getInstance().addAuthChangeListener((user) => {this.changeAuthState(user)});
+        this.changeAuthState(Firebase.getInstance().getAuth().currentUser);
     }
 
     public releaseInstance() {
@@ -38,30 +40,38 @@ class Authentication {
     }
 
     private async changeAuthState (user: firebase.User | null) {
+        let authState = AuthState.NOTSIGNEDIN;
         if (user !== null && user !== undefined) {
+            authState = AuthState.NOTREGISTERED
             let userDoc = Firebase.getInstance().getFirestore().doc(`users/${user.uid}`);
-            this._isUserRegistered = (await userDoc.get()).exists;
+            let userData = await userDoc.get();
+            authState = userData.exists ? (userData.data()?.FIDataConsentStatus === 1 ? AuthState.CONSENTPROVIDED : AuthState.REGISTERED) : authState;
             try {
-                if (this._userRegisterStateUpdateCallback !== undefined && this._userRegisterStateUpdateCallback !== null)
-                this._userRegisterStateUpdateCallback(this._isUserRegistered ? AuthState.REGISTERED : AuthState.NOTREGISTERED);
-                if (!this._isUserRegistered) {
+                if (authState === AuthState.NOTREGISTERED || authState === AuthState.REGISTERED) {
                     this._unsubscribeDocListener = userDoc.onSnapshot((snapshot) => {
-                        this._isUserRegistered = snapshot.data() !== undefined;
-                        if (this._userRegisterStateUpdateCallback !== undefined && this._userRegisterStateUpdateCallback !== null)
-                            this._userRegisterStateUpdateCallback(this._isUserRegistered ? AuthState.REGISTERED : AuthState.NOTREGISTERED);
+                        let authState = AuthState.NOTREGISTERED;
+                        let data = snapshot.data();
+                        if (data !== undefined) {
+                            authState = AuthState.REGISTERED;
+                            if (data.FIDataConsentStatus === 1) authState = AuthState.CONSENTPROVIDED
+                        }
+                        this.broadcastAuthState(authState);
                     });
                 }
             } catch (err) {
                 this._userRegisterStateUpdateCallback = null;
                 console.error(err)
             }
-        } else {
-            if (this._unsubscribeDocListener !== undefined && this._unsubscribeDocListener !== null) {
-                this._unsubscribeDocListener()
-            }
-            if (this._userRegisterStateUpdateCallback !== undefined && this._userRegisterStateUpdateCallback !== null)
-                this._userRegisterStateUpdateCallback(AuthState.NOTSIGNEDIN);
         }
+        this.broadcastAuthState(authState);
+    }
+    
+    private broadcastAuthState (state: number) {
+        if (state === AuthState.CONSENTPROVIDED && this._unsubscribeDocListener !== undefined && this._unsubscribeDocListener !== null)
+            this._unsubscribeDocListener();
+        if (this._userRegisterStateUpdateCallback !== undefined && this._userRegisterStateUpdateCallback !== null)
+            this._userRegisterStateUpdateCallback(state);
+        this.userAuthState = state;
     }
 
     async beginPhoneVerification (phoneNumber: string, verifyRef: firebase.auth.ApplicationVerifier): 
@@ -121,18 +131,11 @@ class Authentication {
         // return result === 'user created successfully';
     }
 
-    async getConsent (): Promise<string> {
+    static async getConsent (): Promise<string> {
         let user = Firebase.getInstance().getAuth().currentUser;
         if (user === null) return "";
-        
-        let headers = new Headers();
-        let token = await user.getIdToken();
-        headers.set('X_FIREBASE_TOKEN', token);
-        let uid = user.uid;
-        headers.set('X_USER_ID', uid);
-        headers.set('Content-Type', 'application/json');
-        // console.log(`Token: ${token}`, `Uid: ${uid}`);
 
+        let headers = await Authentication.getAPIRequestHeader();
         let phoneNumber = user.phoneNumber?.substr(3, 10);
         let response = await Common.makeApiRequest('GET', URLs.getConsent + phoneNumber, headers);
         let result = JSON.parse(response);
@@ -141,6 +144,19 @@ class Authentication {
             return result.msg;
         }
         return '';
+    }
+
+    static async getAPIRequestHeader () {
+        let headers = new Headers();
+        let user = Firebase.getInstance().getAuth().currentUser;
+        if (user !== null) {
+            let token = await user.getIdToken();
+            headers.set('X_FIREBASE_TOKEN', token);
+            let uid = user.uid;
+            headers.set('X_USER_ID', uid);
+            headers.set('Content-Type', 'application/json');
+        }
+        return headers;
     }
 }
 

@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Text,
+  Image
 } from "react-native";
 import colors from "../constants/colors";
 //import { Constants } from 'expo';
@@ -36,29 +37,23 @@ export default class App extends Component {
           right: 30,
         }}
       >
-        <TouchableOpacity>
-          <LinearGradient
-            colors={["#2193b0", "#6dd5ed"]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.cards}
-          ></LinearGradient>
+        <TouchableOpacity style = {styles.cards}>
+        <Image
+          style={{height:150, width: 300}}
+          source={{ uri: 'https://cdn-images-1.medium.com/max/1200/1*v5SYqjYEdQMPIwNduRrnCw.png' }}
+        /> 
         </TouchableOpacity>
-        <TouchableOpacity>
-          <LinearGradient
-            colors={["#2193b0", "#6dd5ed"]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.cards}
-          ></LinearGradient>
+        <TouchableOpacity style = {styles.cards}>
+        <Image
+          style={{height:150, width:300}}
+          source={{ uri: 'https://www.deccanherald.com/sites/dh/files/article_images/2018/12/15/file70rohmh1zgz1ayirr267-1544881758.jpg' }}
+        /> 
         </TouchableOpacity>
-        <TouchableOpacity>
-          <LinearGradient
-            colors={["#2193b0", "#6dd5ed"]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.cards}
-          ></LinearGradient>
+        <TouchableOpacity style = {styles.cards}>
+        <Image
+          style={{height:150, width:300}}
+          source={{ uri: 'https://mma.prnewswire.com/media/534936/Ferns_N_Petals_Logo.jpg?p=facebook' }}
+        /> 
         </TouchableOpacity>
       </ScrollView>
     );
@@ -71,11 +66,12 @@ const styles = StyleSheet.create({
     backgroundColor: "rgb(210, 242, 249)",
   },
   cards: {
-    marginTop: 30,
-    backgroundColor: "darkgrey",
-    width: width - 120,
+    marginTop: 20,
+    backgroundColor: "white",
+    width: 300,
     margin: 10,
     height: 150,
     borderRadius: 10,
+    resizeMode:"stretch"
   },
 });

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/DashboardPages/HomeScreen";
 import LoginScreen, {
   ViewProps as LoginProps,
 } from "../screens/Authentication/LoginScreen";
@@ -23,6 +23,7 @@ export type AuthStackParams = {
 };
 
 export type MainStackParams = {
+  Dashboard: undefined;
   Home: undefined;
   Profile: undefined;
   Bank: undefined;
@@ -30,7 +31,6 @@ export type MainStackParams = {
   Investment: undefined;
   Transactions: undefined;
   MutualFund: undefined;
-  Dashboard: undefined;
 };
 
 const AuthStack = createStackNavigator<AuthStackParams>();
@@ -61,7 +61,7 @@ class Main extends Component<any, States> {
     try {
       this.setState((state) => {
         return {
-            isAuthComplete: authState === AuthState.REGISTERED,
+            isAuthComplete: authState >= AuthState.REGISTERED,
         };
       });
     } catch (err) {
@@ -78,34 +78,24 @@ class Main extends Component<any, States> {
                 options={{ headerShown: false }}
             />
             <MainStack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ headerShown: false }}
-            />
-            <MainStack.Screen
                 name="Profile"
                 component={UserProfileScreen}
-                options={{ headerShown: false }}
             />
             <MainStack.Screen
                 name="Investment"
                 component={InvestmentScreen}
-                options={{ headerShown: false }}
             />
             <MainStack.Screen
                 name="Transactions"
                 component={TransactionScreen}
-                options={{ headerShown: false }}
-            />
-            <MainStack.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{ headerShown: false }}
             />
             <MainStack.Screen
                 name="Bank"
                 component={BankDetailsScreen}
-                options={{ headerShown: false }}
+            />
+            <MainStack.Screen
+                name="MutualFund"
+                component={MutualFundsScreen}
             />
       </MainStack.Navigator>
     ) : (

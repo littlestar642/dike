@@ -37,11 +37,12 @@ class SignupScreen extends React.Component<Props, States> {
         super(props);
         this.auth = new Authentication();
         this.phoneVerifier = React.createRef();
+        let isSignedIn = Firebase.getInstance().getAuth().currentUser !== null;
         this.state = {
             username: '',
             usernameError: '',
-            isSignedIn: this.auth.isSignedIn || false,
-            isVerificationSent: this.auth.isSignedIn || false,
+            isSignedIn: isSignedIn,
+            isVerificationSent: isSignedIn,
             isLoading: false
         };
     }
@@ -116,7 +117,7 @@ class SignupScreen extends React.Component<Props, States> {
     render() {
         let defaultMobile = Firebase.getInstance().getAuth().currentUser?.phoneNumber || '';
         if (this.state.isSignedIn) {
-            defaultMobile = defaultMobile.substr(defaultMobile.length - 10, 10);
+            defaultMobile = defaultMobile.substr(3, 10);
         }
         return (
             <SafeAreaView style={styles.container}>

@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 52,
         fontWeight: "bold",
-        color:"#5AD1FC",
+        color:colors.primary,
         marginTop: 50
     },
     link: {

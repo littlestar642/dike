@@ -6,9 +6,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash2.png",
+      "image": "./assets/splash3.png",
       "resizeMode": "contain",
-      "backgroundColor": "#5AD1FC"
+      "backgroundColor": "#11C0FF"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/ada.png",
-        "backgroundColor": "#5AD1FC"
+        "backgroundColor": "#11C0FF"
       },
       "package": "com.dike.Dike"
     },

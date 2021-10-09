@@ -1,13 +1,17 @@
+
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { Header } from "react-native-elements";
+import { Icon } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Consent from "../components/Consent";
-import CircularLoader from "../components/Loader";
 import { MainStackParams } from "../navigation/Main";
-import Authentication from "../util/Authentication";
-import Firebase from "../util/FirebaseUtils";
+import Authentication, { AuthState } from "../util/Authentication";
+import ConsentScreen from "./DashboardPages/ConsentScreen";
+import HomeScreen from "./DashboardPages/HomeScreen";
+import MenuScreen from "./DashboardPages/MenuScreen";
+import UserProfileScreen from "./UserProfileScreen";
 
 type Props = {
     navigation: StackNavigationProp<MainStackParams>
@@ -18,8 +22,52 @@ type States = {
     isConsentTaken: boolean;
 }
 
+export type DashboardTabProps = {
+    Home: undefined,
+    Menu: {isConsentTaken: boolean},
+};
+
+const DashboardNavigator = createMaterialTopTabNavigator<DashboardTabProps>();
+
+type DashboardProps = {
+    isConsentTaken: boolean;
+}
+
+function TabIcons( route: RouteProp<DashboardTabProps, keyof DashboardTabProps>, focused: boolean, color: string, ) {
+    if (route.name === 'Home')
+    {
+        return <Icon name="home" color={color} />
+    }
+    if (route.name === 'Menu')
+    {
+        return <Icon name="menu" color={color} />
+    }
+}
+
+function DashboardTabs(props: DashboardProps) {
+    console.log(props.isConsentTaken);
+    return (
+        <DashboardNavigator.Navigator 
+            initialRouteName='Home'
+            screenOptions={({route}) => ({
+                tabBarIcon: ({focused, color}) => {return TabIcons(route, focused, color);},
+                tabBarShowLabel: false
+            })}
+        >
+            <DashboardNavigator.Screen
+                name='Home'
+                component={ props.isConsentTaken ? HomeScreen : ConsentScreen }
+            />
+            <DashboardNavigator.Screen
+                name='Menu'
+                component={MenuScreen}
+            />
+        </DashboardNavigator.Navigator>
+    )
+}
+
 class Dashboard extends React.Component<Props, States> {
-    private unsubscribeConsentListener: { (): void; } | null | undefined;
+    private auth: Authentication | undefined;
 
     constructor (props: Props) {
         super (props);
@@ -28,26 +76,11 @@ class Dashboard extends React.Component<Props, States> {
             isConsentTaken: false
         };
     }
-
-    componentDidMount () {
-        this.listenConsentState();
-
-    }
     
-    async listenConsentState () {
-        let user = Firebase.getInstance().getAuth().currentUser;
-        if (user !== null) {
-            let userDoc = Firebase.getInstance().getFirestore().doc(`users/${user.uid}`);
-            if ((await userDoc.get()).exists)
-            {
-                this.unsubscribeConsentListener = userDoc.onSnapshot(user => {
-                    let fiConsentStatus = user?.data()?.FIDataConsentStatus;
-                    if (fiConsentStatus === 1) {
-                        this.updateConsentState(true);
-                    }
-                });
-            }
-        }
+    componentDidMount () {
+        this.auth = new Authentication((state) => {
+            this.updateConsentState(state === AuthState.CONSENTPROVIDED);
+        });
     }
 
     updateConsentState (isConsentTaken: boolean) {
@@ -58,20 +91,16 @@ class Dashboard extends React.Component<Props, States> {
                 isConsentTaken: isConsentTaken
             };
         });
-        if (isConsentTaken && this.unsubscribeConsentListener !== undefined && this.unsubscribeConsentListener !== null) {
-            this.unsubscribeConsentListener();
-        }
+    }
+
+    componentWillUnmount () {
+        this.auth?.releaseInstance();
     }
 
     render () {
         return (
             <SafeAreaView style={styles.root}>
-                { !this.state.isConsentTaken ? (
-                    <Consent />
-                ) : (
-                    <Text>Consent Taken</Text>
-                )
-                }
+                <DashboardTabs isConsentTaken={this.state.isConsentTaken} />
             </SafeAreaView>
         )
     }

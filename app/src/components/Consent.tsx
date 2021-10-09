@@ -26,8 +26,7 @@ class Consent extends React.Component<ConsentProps, ConsentState> {
     }
 
     async loadConsentForm() {
-        let auth = new Authentication();
-        let url = await auth.getConsent();
+        let url = await Authentication.getConsent();
         if (url !== "")
         {
             this.setState (state => {
@@ -40,8 +39,8 @@ class Consent extends React.Component<ConsentProps, ConsentState> {
     }
 
     viewStateChange (navigation: WebViewNavigation) {
-        if (navigation.url === URLs.redirect) {
-            console.log("success");
+        if (navigation.url === URLs.redirect || navigation.url === URLs.redirect + '/') {
+            console.log('Consent flow ended');
         }
         console.log(navigation.url);
     }
