@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Firebase from "../util/FirebaseUtils";
+import UserData from "../util/UserData";
 const TransactionScreen = () => {
   //   const db = Firebase.getFirestore;
   //   const [transactionData, setTransactionData] = useState([]);
@@ -25,67 +26,12 @@ const TransactionScreen = () => {
   //         });
   //       });
   //   }, [transactionData]);
-  const transactionData = [
-    {
-      amount: 30000,
-      currentBalance: 69343.47,
-      mode: "FT",
-      narration: "sfdfdfsdf",
-      reference: "cvcxvvb1",
-      transactionTimestamp: "egfbbgdf",
-      txnId: "fghgfh",
-      type: "DEBIT",
-      valueDate: "2021-04-25",
-    },
-    {
-      amount: 30000,
-      currentBalance: 69343.47,
-      mode: "FT",
-      narration: "sfdfdfsdf",
-      reference: "cvcxvvb2",
-      transactionTimestamp: "egfbbgdf",
-      txnId: "fghgfh",
-      type: "DEBIT",
-      valueDate: "2021-04-25",
-    },
-    {
-      amount: 30000,
-      currentBalance: 69343.47,
-      mode: "FT",
-      narration: "sfdfdfsdf",
-      reference: "cvcxvvb3",
-      transactionTimestamp: "egfbbgdf",
-      txnId: "fghgfh",
-      type: "DEBIT",
-      valueDate: "2021-04-25",
-    },
-    {
-      amount: 30000,
-      currentBalance: 69343.47,
-      mode: "FT",
-      narration: "sfdfdfsdf",
-      reference: "cvcxvvb4",
-      transactionTimestamp: "egfbbgdf",
-      txnId: "fghgfh",
-      type: "DEBIT",
-      valueDate: "2021-04-25",
-    },
-    {
-      amount: 30000,
-      currentBalance: 69343.47,
-      mode: "FT",
-      narration: "sfdfdfsdf",
-      reference: "cvcxvvb5",
-      transactionTimestamp: "egfbbgdf",
-      txnId: "fghgfh",
-      type: "DEBIT",
-      valueDate: "2021-04-25",
-    },
-  ];
+  const transactionData = UserData.instance.transactions;
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
         data={transactionData}
+        keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listitem}>
             <View style={{ flex: 1 }}>

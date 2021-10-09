@@ -6,6 +6,7 @@ import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Icon } from "react-native-elements";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CircularLoader from "../components/Loader";
 import { MainStackParams } from "../navigation/Main";
 import Authentication, { AuthState } from "../util/Authentication";
 import UserData from "../util/UserData";
@@ -32,6 +33,7 @@ const DashboardNavigator = createMaterialTopTabNavigator<DashboardTabProps>();
 
 type DashboardProps = {
     isConsentTaken: boolean;
+    isLoading: boolean;
 }
 
 function TabIcons( route: RouteProp<DashboardTabProps, keyof DashboardTabProps>, focused: boolean, color: string, ) {
@@ -57,7 +59,7 @@ function DashboardTabs(props: DashboardProps) {
         >
             <DashboardNavigator.Screen
                 name='Home'
-                component={ props.isConsentTaken ? HomeScreen : ConsentScreen }
+                component={ props.isConsentTaken ? (props.isLoading ? CircularLoader : HomeScreen) : ConsentScreen }
             />
             <DashboardNavigator.Screen
                 name='Menu'
@@ -88,13 +90,19 @@ class Dashboard extends React.Component<Props, States> {
         this.setState(state => {
             return {
                 ...state,
-                isLoading: false,
                 isConsentTaken: isConsentTaken
             };
         });
         if (isConsentTaken) {
             setTimeout(() => {
+                console.log('fetch data');
                 UserData.instance;
+                this.setState(state => {
+                    return {
+                        ...state,
+                        isLoading: false
+                    }
+                });
             }, 5000);
         }
     }
@@ -106,7 +114,7 @@ class Dashboard extends React.Component<Props, States> {
     render () {
         return (
             <SafeAreaView style={styles.root}>
-                <DashboardTabs isConsentTaken={this.state.isConsentTaken} />
+                <DashboardTabs isConsentTaken={this.state.isConsentTaken} isLoading={this.state.isLoading} />
             </SafeAreaView>
         )
     }

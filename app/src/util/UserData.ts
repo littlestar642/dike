@@ -4,8 +4,8 @@ import Common from "./CommonUtils";
 
 class UserData {
     private static _instance: UserData;
-    private _transactions: object;
-    private _mutualFunds: object;
+    private _transactions: Array<any>;
+    private _mutualFunds: any;
     private dataReady: boolean;
 
     private constructor() {
@@ -44,11 +44,11 @@ class UserData {
         this.dataReady = true;
     }
 
-    public get transactions(): object {
+    public get transactions(): Array<any> {
         return this._transactions;
     }
 
-    public get mutualFunds(): object {
+    public get mutualFunds(): any {
         return this._mutualFunds;
     }
 }
