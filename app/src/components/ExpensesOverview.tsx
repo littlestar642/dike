@@ -1,57 +1,75 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { AnimatedCircularProgress } from "react-native-circular-progress";
 import colors from "../constants/colors";
+import URLs from "../constants/urls";
+import Authentication from "../util/Authentication";
+import Common from "../util/CommonUtils";
+import { Icon } from "react-native-elements";
 
-const ExpensesOverview = () => {
-  const numerator = 100;
-  const denomenator = 200;
-  return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-      }}
-    >
-      <View style={styles.container1}>
-        <Text style={styles.number1}>{numerator}</Text>
-        <Text style={styles.number2}>{denomenator}</Text>
-      </View>
-      <View style={styles.container2}>
-        <View style={styles.rows}></View>
-        <View style={styles.rows}></View>
-        <View style={styles.rows}></View>
-      </View>
-    </View>
-  );
+type overviewStates = {
+    score: number
+}
+
+class ExpensesOverview extends React.Component<any, overviewStates> {
+    constructor (props: any) {
+        super(props);
+        this.state = {
+            score: 0
+        };
+    }
+
+    componentDidMount () {
+        this.getScore();
+    }
+
+    async getScore() {
+        let headers = await Authentication.getAPIRequestHeader();
+        let data = await Common.makeApiRequest('GET', URLs.getScore, headers);
+        let score = JSON.parse(data).msg;
+        this.setState(state => {
+            return {
+                ...state,
+                score: score
+            }
+        });
+    }
+
+    async onPress(){
+
+    }
+
+    render () {
+        return (
+            <View style={{ flexDirection: "row" }}>
+                <View style = {styles.container2}>
+                    <AnimatedCircularProgress size={100} width={7} lineCap="round" rotation={225} backgroundWidth={2} fill={this.state.score}
+                    tintColor={colors.white} backgroundColor={colors.gray} arcSweepAngle={270}>
+                    { (fill) => (
+                        <View style={{alignItems: "center"}}>
+                            <Text style={{color: colors.white, fontSize: 12}}>Score</Text>
+                            <Text style={{fontSize: 40, fontWeight: 'bold', color: colors.white}}>{this.state.score}</Text>
+                        </View>
+                    )}
+                    </AnimatedCircularProgress>
+                </View>
+                <View style = {styles.container2}>
+                <TouchableOpacity>
+                    <Icon name="piechart" color={colors.white} />
+                </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
 };
 
 export default ExpensesOverview;
 
 const styles = StyleSheet.create({
-  container1: {
-    flex: 2,
-    backgroundColor: "rgb(210, 242, 249)",
-    padding: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   container2: {
     flex: 3,
     backgroundColor: "rgb(210, 242, 249)",
     padding: 10,
-  },
-  number1: {
-    flex: 1,
-    borderBottomWidth: 2,
-    paddingTop: 30,
-    fontSize: 50,
-    color: "rgb(6, 38, 45)",
-  },
-  number2: {
-    flex: 1,
-    fontSize: 50,
-    marginBottom: 20,
-    color: "rgb(6, 38, 45)",
   },
   rows: {
     flex: 1,

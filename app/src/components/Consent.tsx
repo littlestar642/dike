@@ -26,8 +26,7 @@ class Consent extends React.Component<ConsentProps, ConsentState> {
     }
 
     async loadConsentForm() {
-        let auth = new Authentication();
-        let url = await auth.getConsent();
+        let url = await Authentication.getConsent();
         if (url !== "")
         {
             this.setState (state => {

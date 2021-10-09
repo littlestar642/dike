@@ -78,34 +78,24 @@ class Main extends Component<any, States> {
                 options={{ headerShown: false }}
             />
             <MainStack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ headerShown: false }}
-            />
-            <MainStack.Screen
                 name="Profile"
                 component={UserProfileScreen}
-                options={{ headerShown: false }}
             />
             <MainStack.Screen
                 name="Investment"
                 component={InvestmentScreen}
-                options={{ headerShown: false }}
             />
             <MainStack.Screen
                 name="Transactions"
                 component={TransactionScreen}
-                options={{ headerShown: false }}
-            />
-            <MainStack.Screen
-                name="Settings"
-                component={SettingsScreen}
-                options={{ headerShown: false }}
             />
             <MainStack.Screen
                 name="Bank"
                 component={BankDetailsScreen}
-                options={{ headerShown: false }}
+            />
+            <MainStack.Screen
+                name="MutualFund"
+                component={MutualFundsScreen}
             />
       </MainStack.Navigator>
     ) : (

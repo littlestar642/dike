@@ -69,7 +69,7 @@ class Authentication {
     private broadcastAuthState (state: number) {
         if (state === AuthState.CONSENTPROVIDED && this._unsubscribeDocListener !== undefined && this._unsubscribeDocListener !== null)
             this._unsubscribeDocListener();
-        if (this.userAuthState !== state && this._userRegisterStateUpdateCallback !== undefined && this._userRegisterStateUpdateCallback !== null)
+        if (this._userRegisterStateUpdateCallback !== undefined && this._userRegisterStateUpdateCallback !== null)
             this._userRegisterStateUpdateCallback(state);
         this.userAuthState = state;
     }
@@ -131,18 +131,11 @@ class Authentication {
         // return result === 'user created successfully';
     }
 
-    async getConsent (): Promise<string> {
+    static async getConsent (): Promise<string> {
         let user = Firebase.getInstance().getAuth().currentUser;
         if (user === null) return "";
-        
-        let headers = new Headers();
-        let token = await user.getIdToken();
-        headers.set('X_FIREBASE_TOKEN', token);
-        let uid = user.uid;
-        headers.set('X_USER_ID', uid);
-        headers.set('Content-Type', 'application/json');
-        // console.log(`Token: ${token}`, `Uid: ${uid}`);
 
+        let headers = await Authentication.getAPIRequestHeader();
         let phoneNumber = user.phoneNumber?.substr(3, 10);
         let response = await Common.makeApiRequest('GET', URLs.getConsent + phoneNumber, headers);
         let result = JSON.parse(response);
@@ -151,6 +144,19 @@ class Authentication {
             return result.msg;
         }
         return '';
+    }
+
+    static async getAPIRequestHeader () {
+        let headers = new Headers();
+        let user = Firebase.getInstance().getAuth().currentUser;
+        if (user !== null) {
+            let token = await user.getIdToken();
+            headers.set('X_FIREBASE_TOKEN', token);
+            let uid = user.uid;
+            headers.set('X_USER_ID', uid);
+            headers.set('Content-Type', 'application/json');
+        }
+        return headers;
     }
 }
 

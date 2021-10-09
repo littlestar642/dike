@@ -45,6 +45,7 @@ function TabIcons( route: RouteProp<DashboardTabProps, keyof DashboardTabProps>,
 }
 
 function DashboardTabs(props: DashboardProps) {
+    console.log(props.isConsentTaken);
     return (
         <DashboardNavigator.Navigator 
             initialRouteName='Home'
@@ -60,7 +61,6 @@ function DashboardTabs(props: DashboardProps) {
             <DashboardNavigator.Screen
                 name='Menu'
                 component={MenuScreen}
-                initialParams={{isConsentTaken: props.isConsentTaken}}
             />
         </DashboardNavigator.Navigator>
     )

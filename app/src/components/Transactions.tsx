@@ -21,6 +21,7 @@ const Transactions = ({}) => {
     <View style={styles.container}>
       <FlatList
         data={transactionData}
+        keyExtractor={(data, index) => index.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity>
             <LinearGradient
