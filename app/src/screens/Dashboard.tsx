@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import CircularLoader from "../components/Loader";
 import { MainStackParams } from "../navigation/Main";
 import Authentication, { AuthState } from "../util/Authentication";
+import Firebase from "../util/FirebaseUtils";
 import UserData from "../util/UserData";
 import ConsentScreen from "./DashboardPages/ConsentScreen";
 import HomeScreen from "./DashboardPages/HomeScreen";
@@ -47,6 +48,19 @@ function TabIcons( route: RouteProp<DashboardTabProps, keyof DashboardTabProps>,
     }
 }
 
+function SyncWaitScreen() {
+    return (
+        <View>
+            <CircularLoader />
+            <View style={{alignItems: "center"}}>
+                <Text>
+                    Please wait till Dike syncs your Finance Data
+                </Text>
+            </View>
+        </View>
+    )
+}
+
 function DashboardTabs(props: DashboardProps) {
     console.log(props.isConsentTaken);
     return (
@@ -59,7 +73,7 @@ function DashboardTabs(props: DashboardProps) {
         >
             <DashboardNavigator.Screen
                 name='Home'
-                component={ props.isConsentTaken ? (props.isLoading ? CircularLoader : HomeScreen) : ConsentScreen }
+                component={ props.isConsentTaken ? (props.isLoading ? SyncWaitScreen : HomeScreen) : ConsentScreen }
             />
             <DashboardNavigator.Screen
                 name='Menu'
@@ -71,6 +85,7 @@ function DashboardTabs(props: DashboardProps) {
 
 class Dashboard extends React.Component<Props, States> {
     private auth: Authentication | undefined;
+    private releaseDataProcessListener: (() => void) | undefined;
 
     constructor (props: Props) {
         super (props);
@@ -94,16 +109,30 @@ class Dashboard extends React.Component<Props, States> {
             };
         });
         if (isConsentTaken) {
-            setTimeout(async () => {
-                await UserData.instance.refreshData();
-                this.setState(state => {
-                    return {
-                        ...state,
-                        isLoading: false
+            let user = Firebase.getInstance().getAuth().currentUser;
+            let doc = Firebase.getInstance().getFirestore().doc(`users/${user?.uid}`);
+            this.releaseDataProcessListener = doc.onSnapshot(snapshot => {
+                let data = snapshot.data();
+                if (data != undefined) {
+                    let fetchStatus = data.FIDataFetchStatus;
+                    if (fetchStatus === 1) {
+                        this.dataFetchComplete();
                     }
-                });
-            }, 10000);
+                }
+            })
         }
+    }
+
+    async dataFetchComplete () {
+        await UserData.instance.refreshData();
+        this.setState(state => {
+            return {
+                ...state,
+                isLoading: false
+            }
+        });
+        if (this.releaseDataProcessListener !== null && this.releaseDataProcessListener !== undefined)
+            this.releaseDataProcessListener();
     }
 
     componentWillUnmount () {
