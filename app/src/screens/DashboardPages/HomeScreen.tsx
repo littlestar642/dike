@@ -2,10 +2,10 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import colors from "../constants/colors";
-import ExpensesOverview from "../components/ExpensesOverview";
-import Offers from "../components/Offers";
-import Transactions from "../components/Transactions";
+import colors from "../../constants/colors";
+import ExpensesOverview from "../../components/ExpensesOverview";
+import Offers from "../../components/Offers";
+import Transactions from "../../components/Transactions";
 
 const styles = StyleSheet.create({
   container: {

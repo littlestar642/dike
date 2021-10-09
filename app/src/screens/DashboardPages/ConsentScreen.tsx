@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../components/Button";
-import Consent from "../components/Consent";
+import { Button } from "../../components/Button";
+import Consent from "../../components/Consent";
 
 export default function ConsentScreen() {
     let [isClicked, updateClick] = useState(false);
     return (
-        <SafeAreaView style={{flex: 1}}>
+        <View style={{flex: 1}}>
             { isClicked ? (
                 <Consent />
             ) : (
@@ -18,6 +17,6 @@ export default function ConsentScreen() {
                     <Button onPress={() => updateClick(true)}>Provide Consent to Dike</Button>
                 </View>
             )}
-        </SafeAreaView>
+        </View>
     );
 }
