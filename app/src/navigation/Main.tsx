@@ -91,7 +91,7 @@ class Main extends Component<any, States> {
             />
             <MainStack.Screen
                 name="Bank"
-                component={BankDetailsScreen}
+                component={UserProfileScreen}
             />
             <MainStack.Screen
                 name="MutualFund"

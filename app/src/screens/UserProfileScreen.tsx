@@ -23,19 +23,18 @@ export default class UserProfileScreen extends Component<Props> {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <Image
-              style={styles.avatar}
-              source={{
-                uri: "https://upload.wikimedia.org/wikipedia/commons/a/a8/Lava_the_sled_dog.jpg",
-              }}
-            />
-
-            <Text style={styles.name}> Pup </Text>
+            <Text style={styles.name}> {this.profileData.name} </Text>
             <TouchableOpacity>
-              <Text style={styles.userInfo}>pup@mail.com </Text>
+              <Text style={styles.userInfo}>{this.profileData.dob} </Text>
             </TouchableOpacity>
             <TouchableOpacity>
-              <Text style={styles.userInfo}> +91-6969696969 </Text>
+              <Text style={styles.userInfo}> {this.profileData.mobile} </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.userInfo}>{this.profileData.pan} </Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.userInfo}>{this.profileData.email} </Text>
             </TouchableOpacity>
           </View>
         </View>
