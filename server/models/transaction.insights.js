@@ -1,14 +1,14 @@
 class TransactionInsights {
-    constructor(ID, totalCredits, totalDebits, spendingSources) {
-        this.ID = ID;
+    constructor(startDate, endDate, totalCredits, totalDebits) {
         this.totalCredits = totalCredits;
         this.totalDebits = totalDebits;
-        this.spendingSources = spendingSources;
+        this.startDate = startDate;
+        this.endDate = endDate
         return {
-            ID: this.ID,
             totalCredits: this.totalCredits,
             totalDebits: this.totalDebits,
-            spendingSources: this.spendingSources
+            startDate:this.startDate,
+            endDate:this.endDate
         }
     }
 }

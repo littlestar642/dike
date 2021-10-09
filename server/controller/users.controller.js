@@ -61,14 +61,18 @@ const GetUserMutualFunds = async (req, res) => {
     }
 }
 
-const GetData = async (req, res) => {
-    let val = await firebaseUtil.GetInstance().get("fidata/doc")
-    res.send(val);
+const GenerateUserScore = async(req,res) =>{
+    let val = await req.firestore.GenerateAndFetchUserScore(req.user["uid"])
+    if (val.success){
+        res.send(val)
+    } else{
+        res.status(500).send(val)
+    }
 }
 
 module.exports = {
     Consent,
-    GetData,
     GetUserTransactions, 
-    GetUserMutualFunds
+    GetUserMutualFunds,
+    GenerateUserScore
 }

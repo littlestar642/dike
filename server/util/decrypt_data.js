@@ -52,7 +52,7 @@ const processBankData = (body, consent_handle) => {
       if (decoded_data.account["type"] == "deposit") {
         processDecodedBankData(decoded_data, consent_handle)
       } else if (decoded_data.account["type"] == "credit_card") {
-        processDecodedCreditCardData()
+        processDecodedCreditCardData(decoded_data, consent_handle)
       }
     })
     .catch((err) => console.log(err.data.error));
@@ -81,8 +81,9 @@ const processDecodedMFData = async (data, consent_handle) =>{
   await firebaseUtil.GetInstance().saveMFSummaryData(summary["currentValue"], summary["investmentValue"],summary["investment"]["holdings"]["holding"], consent_handle)
 }
 
-const processDecodedCreditCardData = (data, consent_handle) => {
-
+const processDecodedCreditCardData = async (data, consent_handle) => {
+  await firebaseUtil.GetInstance().saveCreditCardTransactionData(data["account"]["transactions"], consent_handle)
+  createCCTransactionInsights(data["account"]["transactions"], consent_handle)
 }
 
 const processDecodedBankData = (data, consent_handle) => {
@@ -110,7 +111,6 @@ const processTransactionData = (data, consent_handle) => {
 const createTransactionInsights = (data, consent_handle) => {
   let totalDebit = 0;
   let totalCredit = 0;
-  let score = 0;
   data["transaction"].forEach(val => {
     if (val.type == "DEBIT") {
       totalDebit += parseFloat(val.amount)
@@ -119,9 +119,21 @@ const createTransactionInsights = (data, consent_handle) => {
     }
     // getTransactionGroup(val.narration)
   })
+  firebaseUtil.GetInstance().updateTransactionInsights(data["startDate"], data["endDate"], totalCredit, totalDebit, consent_handle)
+}
 
-  console.log(totalCredit)
-  console.log(totalDebit)
+const createCCTransactionInsights = (data, consent_handle) => {
+  let totalDebit = 0;
+  let totalCredit = 0;
+  data["transaction"].forEach(val => {
+    if (val["txnType"] == "DEBIT") {
+      totalDebit += parseFloat(val.amount)
+    } else if (val["txnType"] == "CREDIT") {
+      totalCredit += parseFloat(val.amount)
+    }
+    // getTransactionGroup(val.narration)
+  })
+  firebaseUtil.GetInstance().updateCCTransactionInsights(data["startDate"], data["endDate"], totalCredit, totalDebit, consent_handle)
 }
 
 const getTransactionGroup = (narration) => {
