@@ -45,7 +45,20 @@ const Consent = (req, res) => {
 
 const GetUserTransactions = async (req, res) => {
     let val = await req.firestore.FetchTrasactionsForUser(req.user["uid"])
-    res.send(response.Success(val["transaction"]))
+    if (val.success){
+        res.send(val)
+    } else{
+        res.status(500).send(val)
+    }
+}
+
+const GetUserMutualFunds = async (req, res) => {
+    let val = await req.firestore.FetchMFForUser(req.user["uid"])
+    if (val.success){
+        res.send(val)
+    } else{
+        res.status(500).send(val)
+    }
 }
 
 const GetData = async (req, res) => {
@@ -56,5 +69,6 @@ const GetData = async (req, res) => {
 module.exports = {
     Consent,
     GetData,
-    GetUserTransactions
+    GetUserTransactions, 
+    GetUserMutualFunds
 }
